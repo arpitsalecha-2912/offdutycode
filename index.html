@@ -4,33 +4,458 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>OffDutyCode</title>
-  <meta name="description" content="OffDutyCode — code written after hours.">
+  <meta name="description" content="OffDutyCode — side projects, experiments and ideas, built after hours.">
+  <meta name="theme-color" content="#07090f">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌙</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
-    :root { --bg: #0f1115; --fg: #e8e8e8; --muted: #9aa0a6; --accent: #7cd992; }
-    @media (prefers-color-scheme: light) {
-      :root { --bg: #fafafa; --fg: #1a1a1a; --muted: #5f6368; --accent: #1e8e3e; }
+    :root {
+      --bg: #07090f;
+      --panel: rgba(18, 22, 34, 0.72);
+      --border: rgba(140, 160, 255, 0.14);
+      --fg: #e9ecf5;
+      --muted: #8b93a7;
+      --accent: #7cd992;
+      --accent-2: #9d8cff;
+      --warn: #ffcf6b;
+      --mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+      --sans: "Space Grotesk", system-ui, sans-serif;
     }
-    * { box-sizing: border-box; margin: 0; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
     body {
-      min-height: 100vh; display: grid; place-items: center;
-      background: var(--bg); color: var(--fg);
-      font-family: ui-monospace, "SF Mono", Consolas, monospace;
-      padding: 16px;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: var(--sans);
+      line-height: 1.6;
+      overflow-x: hidden;
     }
-    main { max-width: 560px; }
-    h1 { font-size: clamp(2rem, 8vw, 3.5rem); letter-spacing: -0.02em; }
-    h1 span { color: var(--accent); }
-    p { margin-top: 1rem; color: var(--muted); line-height: 1.6; }
-    .cursor { display: inline-block; width: 0.6em; background: var(--accent); animation: blink 1s steps(1) infinite; }
+    #sky { position: fixed; inset: 0; z-index: -2; }
+    .glow {
+      position: fixed; z-index: -1; pointer-events: none;
+      width: 60vmax; height: 60vmax; border-radius: 50%;
+      filter: blur(90px); opacity: 0.18;
+    }
+    .glow.a { background: var(--accent-2); top: -25vmax; right: -20vmax; }
+    .glow.b { background: var(--accent); bottom: -30vmax; left: -25vmax; opacity: 0.1; }
+
+    .wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+
+    /* Nav */
+    nav { display: flex; justify-content: space-between; align-items: center; padding: 20px 0; }
+    .logo { font-family: var(--mono); font-weight: 700; color: var(--fg); text-decoration: none; }
+    .logo span { color: var(--accent); }
+    .status {
+      font-family: var(--mono); font-size: 0.78rem; color: var(--muted);
+      display: flex; align-items: center; gap: 8px;
+      border: 1px solid var(--border); border-radius: 999px; padding: 6px 12px;
+      background: var(--panel);
+    }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 10px var(--accent); }
+    .dot.busy { background: var(--warn); box-shadow: 0 0 10px var(--warn); }
+
+    /* Hero */
+    .hero { min-height: 78vh; display: flex; flex-direction: column; justify-content: center; padding: 40px 0; }
+    .kicker { font-family: var(--mono); color: var(--accent); font-size: 0.9rem; margin-bottom: 16px; }
+    h1 {
+      font-size: clamp(2.6rem, 9vw, 5.5rem); line-height: 1.02; letter-spacing: -0.03em; font-weight: 700;
+    }
+    h1 .grad {
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+    }
+    .typed { font-family: var(--mono); font-size: clamp(1rem, 3vw, 1.3rem); color: var(--muted); margin-top: 24px; min-height: 2em; }
+    .typed b { color: var(--fg); font-weight: 400; }
+    .cursor { display: inline-block; width: 0.55em; height: 1.1em; background: var(--accent); vertical-align: text-bottom; margin-left: 2px; animation: blink 1s steps(1) infinite; }
     @keyframes blink { 50% { opacity: 0; } }
-    footer { margin-top: 2.5rem; font-size: 0.85rem; color: var(--muted); }
+    .cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 36px; }
+    .btn {
+      font-family: var(--mono); font-size: 0.9rem; text-decoration: none;
+      padding: 12px 20px; border-radius: 10px; border: 1px solid var(--border);
+      color: var(--fg); background: var(--panel); transition: transform .15s, border-color .15s;
+    }
+    .btn:hover { transform: translateY(-2px); border-color: var(--accent); }
+    .btn.primary { background: var(--accent); color: #06210f; border-color: var(--accent); font-weight: 700; }
+
+    /* Sections */
+    section { padding: 64px 0; }
+    h2 { font-size: clamp(1.6rem, 4vw, 2.2rem); letter-spacing: -0.02em; margin-bottom: 8px; }
+    .sub { color: var(--muted); margin-bottom: 32px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+    .card {
+      background: var(--panel); border: 1px solid var(--border); border-radius: 16px; padding: 24px;
+      backdrop-filter: blur(8px); transition: transform .2s, border-color .2s;
+    }
+    .card:hover { transform: translateY(-4px); border-color: rgba(124, 217, 146, 0.4); }
+    .card .icon { font-size: 1.8rem; margin-bottom: 12px; }
+    .card h3 { font-size: 1.15rem; margin-bottom: 6px; }
+    .card p { color: var(--muted); font-size: 0.95rem; }
+
+    /* Clock */
+    .clock {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; align-items: center;
+      background: var(--panel); border: 1px solid var(--border); border-radius: 16px; padding: 28px;
+    }
+    .time { font-family: var(--mono); font-size: clamp(2.2rem, 7vw, 3.4rem); font-weight: 700; }
+    .shift { font-family: var(--mono); color: var(--muted); }
+    .shift strong { color: var(--accent); }
+    .bar { height: 8px; border-radius: 99px; background: rgba(255,255,255,0.06); overflow: hidden; margin-top: 12px; }
+    .bar i { display: block; height: 100%; background: linear-gradient(90deg, var(--accent-2), var(--accent)); width: 0; transition: width .6s; }
+
+    /* Terminal */
+    .term {
+      background: #0b0e16; border: 1px solid var(--border); border-radius: 14px; overflow: hidden;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.5); font-family: var(--mono); font-size: 0.9rem;
+    }
+    .term-bar { display: flex; gap: 8px; padding: 12px 14px; background: #121624; border-bottom: 1px solid var(--border); }
+    .term-bar span { width: 12px; height: 12px; border-radius: 50%; }
+    .term-bar span:nth-child(1) { background: #ff5f57; }
+    .term-bar span:nth-child(2) { background: #febc2e; }
+    .term-bar span:nth-child(3) { background: #28c840; }
+    .term-bar em { margin-left: auto; color: var(--muted); font-style: normal; font-size: 0.78rem; }
+    .term-body { padding: 16px; height: 320px; overflow-y: auto; cursor: text; }
+    .term-body .line { white-space: pre-wrap; word-break: break-word; }
+    .term-body .muted { color: var(--muted); }
+    .term-body .ok { color: var(--accent); }
+    .term-body .hl { color: var(--accent-2); }
+    .term-body .warn { color: var(--warn); }
+    .prompt-row { display: flex; gap: 8px; }
+    .prompt { color: var(--accent); flex-shrink: 0; }
+    .term input {
+      flex: 1; min-width: 0; background: transparent; border: 0; outline: 0;
+      color: var(--fg); font: inherit; caret-color: var(--accent);
+    }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+    .chip {
+      font-family: var(--mono); font-size: 0.8rem; color: var(--muted); background: var(--panel);
+      border: 1px solid var(--border); border-radius: 999px; padding: 4px 12px; cursor: pointer;
+    }
+    .chip:hover { color: var(--fg); border-color: var(--accent); }
+
+    footer { padding: 48px 0 40px; color: var(--muted); font-family: var(--mono); font-size: 0.8rem; text-align: center; }
+    footer a { color: var(--muted); }
+
+    .reveal { opacity: 0; transform: translateY(24px); transition: opacity .7s ease, transform .7s ease; }
+    .reveal.in { opacity: 1; transform: none; }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { animation: none !important; transition: none !important; }
+      .reveal { opacity: 1; transform: none; }
+    }
   </style>
 </head>
 <body>
-  <main>
-    <h1>off<span>duty</span>code<span class="cursor">&nbsp;</span></h1>
-    <p>Code written after hours. Something is being built here — check back soon.</p>
-    <footer>&copy; 2026 offdutycode.com</footer>
-  </main>
+  <canvas id="sky" aria-hidden="true"></canvas>
+  <div class="glow a"></div><div class="glow b"></div>
+
+  <div class="wrap">
+    <nav>
+      <a class="logo" href="#">off<span>duty</span>code</a>
+      <div class="status"><i class="dot" id="statusDot"></i><span id="statusText">checking shift…</span></div>
+    </nav>
+
+    <header class="hero">
+      <p class="kicker">// clocked out. still shipping.</p>
+      <h1>Code written<br><span class="grad">after hours.</span></h1>
+      <p class="typed" aria-live="polite"><span id="typed"></span><span class="cursor"></span></p>
+      <div class="cta">
+        <a class="btn primary" href="#terminal">&gt; open terminal</a>
+        <a class="btn" href="#about">what is this?</a>
+      </div>
+    </header>
+
+    <section id="about" class="reveal">
+      <h2>What happens here</h2>
+      <p class="sub">The day job pays the bills. The nights are for building whatever seems fun.</p>
+      <div class="grid">
+        <article class="card">
+          <div class="icon">🛠️</div>
+          <h3>Side projects</h3>
+          <p>Small tools and apps that start as "wouldn't it be cool if…" and sometimes get finished.</p>
+        </article>
+        <article class="card">
+          <div class="icon">🧪</div>
+          <h3>Experiments</h3>
+          <p>New languages, odd frameworks and ideas tried out with nobody watching and no deadlines.</p>
+        </article>
+        <article class="card">
+          <div class="icon">📓</div>
+          <h3>Notes &amp; write-ups</h3>
+          <p>What worked, what broke and what was learned along the way. Shared in case it helps someone.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="reveal">
+      <h2>Shift tracker</h2>
+      <p class="sub">Based on your local time. Weekdays 9 to 6 are "on duty". Everything else is ours.</p>
+      <div class="clock">
+        <div>
+          <div class="time" id="clock">--:--:--</div>
+          <div class="shift" id="shift">…</div>
+        </div>
+        <div>
+          <div class="shift" id="barLabel">…</div>
+          <div class="bar"><i id="bar"></i></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="terminal" class="reveal">
+      <h2>Try the terminal</h2>
+      <p class="sub">Type <code>help</code> and press Enter. Or tap a command below.</p>
+      <div class="term">
+        <div class="term-bar"><span></span><span></span><span></span><em>guest@offdutycode: ~</em></div>
+        <div class="term-body" id="termBody">
+          <div id="termOut"></div>
+          <div class="prompt-row">
+            <span class="prompt">guest@offduty:~$</span>
+            <input id="termIn" autocomplete="off" spellcheck="false" aria-label="Terminal input">
+          </div>
+        </div>
+      </div>
+      <div class="chips" id="chips"></div>
+    </section>
+
+    <footer>
+      <p>&copy; <span id="year"></span> offdutycode.com &middot; built after hours &middot; powered by ☕</p>
+    </footer>
+  </div>
+
+  <script>
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    /* ---------- Starfield ---------- */
+    (() => {
+      const c = document.getElementById("sky");
+      const ctx = c.getContext("2d");
+      let w, h, stars = [], shooting = null;
+      function resize() {
+        w = c.width = innerWidth * devicePixelRatio;
+        h = c.height = innerHeight * devicePixelRatio;
+        c.style.width = innerWidth + "px";
+        c.style.height = innerHeight + "px";
+        const count = Math.min(260, Math.floor((innerWidth * innerHeight) / 5000));
+        stars = Array.from({ length: count }, () => ({
+          x: Math.random() * w, y: Math.random() * h,
+          r: (Math.random() * 1.2 + 0.2) * devicePixelRatio,
+          s: Math.random() * 0.15 + 0.02,
+          t: Math.random() * Math.PI * 2
+        }));
+      }
+      function frame() {
+        ctx.clearRect(0, 0, w, h);
+        for (const st of stars) {
+          st.t += 0.02;
+          st.y -= st.s * devicePixelRatio;
+          if (st.y < 0) { st.y = h; st.x = Math.random() * w; }
+          ctx.globalAlpha = 0.4 + Math.sin(st.t) * 0.35;
+          ctx.fillStyle = "#cfd6ff";
+          ctx.beginPath(); ctx.arc(st.x, st.y, st.r, 0, Math.PI * 2); ctx.fill();
+        }
+        if (!shooting && Math.random() < 0.004) {
+          shooting = { x: Math.random() * w * 0.7, y: Math.random() * h * 0.4, l: 0 };
+        }
+        if (shooting) {
+          shooting.l += 18 * devicePixelRatio;
+          const len = 120 * devicePixelRatio;
+          const x = shooting.x + shooting.l, y = shooting.y + shooting.l * 0.45;
+          const g = ctx.createLinearGradient(x - len, y - len * 0.45, x, y);
+          g.addColorStop(0, "rgba(255,255,255,0)"); g.addColorStop(1, "rgba(255,255,255,0.9)");
+          ctx.globalAlpha = 1; ctx.strokeStyle = g; ctx.lineWidth = 1.5 * devicePixelRatio;
+          ctx.beginPath(); ctx.moveTo(x - len, y - len * 0.45); ctx.lineTo(x, y); ctx.stroke();
+          if (x > w || y > h) shooting = null;
+        }
+        if (!reduceMotion) requestAnimationFrame(frame);
+      }
+      addEventListener("resize", () => { resize(); if (reduceMotion) frame(); });
+      resize(); frame();
+    })();
+
+    /* ---------- Typing taglines ---------- */
+    (() => {
+      const el = document.getElementById("typed");
+      const lines = [
+        "side projects, built at 2am.",
+        "experiments nobody asked for.",
+        "bugs fixed in pajamas.",
+        "ideas that refused to wait for Monday.",
+        "git commit -m \"one more thing\""
+      ];
+      if (reduceMotion) { el.textContent = lines[0]; return; }
+      let i = 0, j = 0, deleting = false;
+      (function tick() {
+        const full = lines[i];
+        j += deleting ? -1 : 1;
+        el.textContent = full.slice(0, j);
+        let wait = deleting ? 30 : 60;
+        if (!deleting && j === full.length) { wait = 1800; deleting = true; }
+        else if (deleting && j === 0) { deleting = false; i = (i + 1) % lines.length; wait = 400; }
+        setTimeout(tick, wait);
+      })();
+    })();
+
+    /* ---------- Shift clock ---------- */
+    function shiftInfo(d = new Date()) {
+      const day = d.getDay(), hr = d.getHours() + d.getMinutes() / 60;
+      const weekday = day >= 1 && day <= 5;
+      const onDuty = weekday && hr >= 9 && hr < 18;
+      return { onDuty, weekday, hr };
+    }
+    function updateClock() {
+      const d = new Date();
+      const { onDuty, weekday, hr } = shiftInfo(d);
+      document.getElementById("clock").textContent = d.toLocaleTimeString([], { hour12: false });
+      const dot = document.getElementById("statusDot");
+      const st = document.getElementById("statusText");
+      const shift = document.getElementById("shift");
+      const label = document.getElementById("barLabel");
+      const bar = document.getElementById("bar");
+      if (onDuty) {
+        dot.classList.add("busy");
+        st.textContent = "on duty — back at 18:00";
+        shift.innerHTML = "Status: <strong style='color:var(--warn)'>on duty</strong>. Day job in progress.";
+        const pct = ((hr - 9) / 9) * 100;
+        label.textContent = `Workday ${pct.toFixed(0)}% done. Off-duty starts at 18:00.`;
+        bar.style.width = pct + "%";
+      } else {
+        dot.classList.remove("busy");
+        st.textContent = "off duty — building";
+        shift.innerHTML = weekday
+          ? "Status: <strong>off duty</strong>. Editor open, coffee brewing."
+          : "Status: <strong>off duty</strong>. It's the weekend. Ship something.";
+        // Off-duty energy: peaks near midnight
+        const fromSix = ((hr - 18 + 24) % 24);
+        const energy = Math.max(10, 100 - Math.abs(fromSix - 6) * 9);
+        label.textContent = `Late-night focus level: ${energy.toFixed(0)}%`;
+        bar.style.width = energy + "%";
+      }
+    }
+    updateClock(); setInterval(updateClock, 1000);
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    /* ---------- Reveal on scroll ---------- */
+    const io = new IntersectionObserver(es => es.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
+    }), { threshold: 0.15 });
+    document.querySelectorAll(".reveal").forEach(el => io.observe(el));
+
+    /* ---------- Terminal ---------- */
+    (() => {
+      const out = document.getElementById("termOut");
+      const input = document.getElementById("termIn");
+      const body = document.getElementById("termBody");
+      const history = []; let hIdx = 0;
+      const coffees = { n: 0 };
+      const quotes = [
+        "It works on my machine. — everyone, at some point",
+        "First, solve the problem. Then, write the code. — John Johnson",
+        "Simplicity is prerequisite for reliability. — Edsger Dijkstra",
+        "Talk is cheap. Show me the code. — Linus Torvalds",
+        "Make it work, make it right, make it fast. — Kent Beck"
+      ];
+
+      function print(text, cls = "") {
+        const div = document.createElement("div");
+        div.className = "line " + cls;
+        div.textContent = text;
+        out.appendChild(div);
+        body.scrollTop = body.scrollHeight;
+      }
+
+      const cmds = {
+        help: () => [
+          ["Available commands:", "hl"],
+          ["  about      what is offdutycode"],
+          ["  status     am I on duty right now?"],
+          ["  ls         list what's in here"],
+          ["  projects   see what's being built"],
+          ["  coffee     refuel"],
+          ["  quote      random dev wisdom"],
+          ["  joke       a programmer joke"],
+          ["  date       current date and time"],
+          ["  echo TEXT  repeat after me"],
+          ["  clear      clean the screen"]
+        ],
+        about: () => [
+          ["offdutycode = code written after the day job ends."],
+          ["Side projects, experiments and notes. No deadlines, no standups.", "muted"]
+        ],
+        whoami: () => [["guest. welcome, make yourself at home.", "ok"]],
+        status: () => {
+          const { onDuty } = shiftInfo();
+          return onDuty
+            ? [["● on duty. day job running. check back after 18:00.", "warn"]]
+            : [["● off duty. editor open. building things.", "ok"]];
+        },
+        ls: () => [["projects/  notes/  experiments/  ideas.txt  coffee.log", "hl"]],
+        projects: () => [
+          ["[■■■■■■■□□□] offdutycode.com   — you're looking at it", "ok"],
+          ["[■■■□□□□□□□] secret-project-1  — loading…", "muted"],
+          ["[■□□□□□□□□□] ideas.txt         — 47 ideas, 0 regrets", "muted"]
+        ],
+        "cat": (args) => {
+          if (args[0] === "ideas.txt") return [["1. build the thing\n2. ship the thing\n3. repeat", "muted"]];
+          if (args[0] === "coffee.log") return [[`cups today: ${coffees.n}`, "muted"]];
+          return [[`cat: ${args[0] || ""}: no such file`, "warn"]];
+        },
+        coffee: () => {
+          coffees.n++;
+          const msg = coffees.n >= 5 ? "  ...maybe try water next? 💧" : "";
+          return [[`☕ cup #${coffees.n} brewed. productivity +${10 + Math.floor(Math.random() * 20)}%${msg}`, "ok"]];
+        },
+        quote: () => [[quotes[Math.floor(Math.random() * quotes.length)], "hl"]],
+        joke: () => {
+          const jokes = [
+            "Why do programmers prefer dark mode? Because light attracts bugs.",
+            "There are 10 kinds of people: those who understand binary and those who don't.",
+            "A SQL query walks into a bar, walks up to two tables and asks: 'Can I join you?'",
+            "I'd tell you a UDP joke, but you might not get it."
+          ];
+          return [[jokes[Math.floor(Math.random() * jokes.length)]]];
+        },
+        date: () => [[new Date().toString(), "muted"]],
+        echo: (args) => [[args.join(" ")]],
+        sudo: () => [["nice try. permission denied. 😄", "warn"]],
+        exit: () => [["you can't clock out of off-duty. 🌙", "hl"]],
+        clear: () => { out.innerHTML = ""; return []; }
+      };
+
+      function run(raw) {
+        const line = raw.trim();
+        print(`guest@offduty:~$ ${line}`, "muted");
+        if (!line) return;
+        history.push(line); hIdx = history.length;
+        const [name, ...args] = line.split(/\s+/);
+        const fn = cmds[name.toLowerCase()];
+        if (!fn) { print(`command not found: ${name}. type 'help'.`, "warn"); return; }
+        for (const [text, cls] of fn(args)) print(text, cls);
+      }
+
+      input.addEventListener("keydown", e => {
+        if (e.key === "Enter") { run(input.value); input.value = ""; }
+        else if (e.key === "ArrowUp" && hIdx > 0) { input.value = history[--hIdx]; e.preventDefault(); }
+        else if (e.key === "ArrowDown") {
+          hIdx = Math.min(history.length, hIdx + 1);
+          input.value = history[hIdx] || "";
+          e.preventDefault();
+        }
+      });
+      body.addEventListener("click", () => input.focus({ preventScroll: true }));
+
+      const chips = document.getElementById("chips");
+      ["help", "status", "projects", "coffee", "joke", "quote"].forEach(c => {
+        const b = document.createElement("button");
+        b.className = "chip"; b.textContent = c;
+        b.onclick = () => { run(c); input.focus({ preventScroll: true }); };
+        chips.appendChild(b);
+      });
+
+      print("welcome to offdutycode v1.0 🌙", "ok");
+      print("type 'help' to see what you can do.", "muted");
+    })();
+  </script>
 </body>
 </html>
