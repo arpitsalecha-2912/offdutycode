@@ -134,6 +134,81 @@
     }
     .chip:hover { color: var(--fg); border-color: var(--accent); }
 
+    /* Login */
+    body.locked { overflow: hidden; }
+    body.locked .wrap { display: none; }
+    body:not(.locked) .login { display: none; }
+    .login {
+      position: fixed; inset: 0; z-index: 10; overflow-y: auto;
+      display: flex; align-items: center; justify-content: center; padding: 24px 16px;
+    }
+    .login-box {
+      width: 100%; max-width: 420px; background: var(--panel); border: 1px solid var(--border);
+      border-radius: 18px; padding: 28px 24px; backdrop-filter: blur(12px);
+      box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+    }
+    .login-box .logo { display: block; font-size: 1.3rem; margin-bottom: 4px; }
+    .login-box .sub { margin-bottom: 22px; font-size: 0.95rem; }
+    .tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 4px; border-radius: 12px; background: rgba(255,255,255,0.04); border: 1px solid var(--border); margin-bottom: 20px; }
+    .tab {
+      font-family: var(--mono); font-size: 0.88rem; padding: 10px; border: 0; border-radius: 9px;
+      background: transparent; color: var(--muted); cursor: pointer;
+    }
+    .tab[aria-selected="true"] { background: var(--accent); color: #06210f; font-weight: 700; }
+    .tab[data-role="admin"][aria-selected="true"] { background: var(--accent-2); color: #120a33; }
+    .field { display: block; margin-bottom: 14px; }
+    .field span { display: block; font-family: var(--mono); font-size: 0.78rem; color: var(--muted); margin-bottom: 6px; }
+    .field input {
+      width: 100%; font: inherit; font-size: 1rem; color: var(--fg); background: #0b0e16;
+      border: 1px solid var(--border); border-radius: 10px; padding: 11px 12px; outline: 0;
+    }
+    .field input:focus { border-color: var(--accent); }
+    .login-box .btn { width: 100%; cursor: pointer; font-size: 0.95rem; }
+    .login-box .btn.admin { background: var(--accent-2); border-color: var(--accent-2); color: #120a33; font-weight: 700; }
+    .hint { font-family: var(--mono); font-size: 0.78rem; color: var(--muted); margin-top: 14px; text-align: center; }
+    .error { font-family: var(--mono); font-size: 0.82rem; color: #ff8a8a; min-height: 1.3em; margin: -4px 0 10px; }
+    .shake { animation: shake .35s; }
+    @keyframes shake { 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+
+    /* Nav user */
+    nav { flex-wrap: wrap; gap: 10px; }
+    .nav-right { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+    .user {
+      font-family: var(--mono); font-size: 0.78rem; display: flex; align-items: center; gap: 8px;
+      border: 1px solid var(--border); border-radius: 999px; padding: 4px 4px 4px 12px; background: var(--panel);
+    }
+    .role { font-size: 0.7rem; padding: 1px 7px; border-radius: 99px; background: rgba(124,217,146,0.15); color: var(--accent); }
+    .role.admin { background: rgba(157,140,255,0.18); color: var(--accent-2); }
+    .logout {
+      font: inherit; font-size: 0.75rem; color: var(--muted); background: rgba(255,255,255,0.05);
+      border: 0; border-radius: 99px; padding: 4px 10px; cursor: pointer;
+    }
+    .logout:hover { color: var(--fg); }
+
+    /* Projects + admin */
+    .plist { display: grid; gap: 10px; list-style: none; }
+    .plist li {
+      display: flex; align-items: center; gap: 12px; background: var(--panel); border: 1px solid var(--border);
+      border-radius: 12px; padding: 14px 16px;
+    }
+    .plist .pname { font-weight: 600; }
+    .plist .pdesc { color: var(--muted); font-size: 0.92rem; }
+    .plist .ptext { flex: 1; min-width: 0; }
+    .tag { font-family: var(--mono); font-size: 0.72rem; padding: 2px 8px; border-radius: 99px; border: 1px solid var(--border); color: var(--muted); white-space: nowrap; }
+    .tag.done { color: var(--accent); border-color: rgba(124,217,146,0.4); }
+    .del { font: inherit; font-size: 0.8rem; color: #ff8a8a; background: transparent; border: 1px solid rgba(255,138,138,0.3); border-radius: 8px; padding: 4px 8px; cursor: pointer; }
+    .admin-panel { border-color: rgba(157,140,255,0.35); }
+    .admin-panel h2 .role { font-size: 0.8rem; vertical-align: middle; }
+    .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 24px; }
+    .stat { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; }
+    .stat b { display: block; font-family: var(--mono); font-size: 1.4rem; }
+    .stat span { color: var(--muted); font-size: 0.82rem; }
+    .add-form { display: grid; grid-template-columns: 1fr 1fr auto auto; gap: 10px; align-items: end; margin-bottom: 16px; }
+    .add-form .field { margin: 0; }
+    .add-form select { width: 100%; font: inherit; color: var(--fg); background: #0b0e16; border: 1px solid var(--border); border-radius: 10px; padding: 11px 10px; }
+    .add-form .btn { cursor: pointer; }
+    @media (max-width: 640px) { .add-form { grid-template-columns: 1fr; } }
+
     footer { padding: 48px 0 40px; color: var(--muted); font-family: var(--mono); font-size: 0.8rem; text-align: center; }
     footer a { color: var(--muted); }
 
@@ -146,14 +221,53 @@
     }
   </style>
 </head>
-<body>
+<body class="locked">
   <canvas id="sky" aria-hidden="true"></canvas>
   <div class="glow a"></div><div class="glow b"></div>
+
+  <!-- Login screen -->
+  <div class="login" id="login">
+    <div class="login-box" id="loginBox">
+      <span class="logo">off<span>duty</span>code</span>
+      <p class="sub">Clocked out. Still shipping. Who's checking in?</p>
+
+      <div class="tabs" role="tablist">
+        <button class="tab" role="tab" data-role="guest" aria-selected="true">👋 Guest</button>
+        <button class="tab" role="tab" data-role="admin" aria-selected="false">🔐 Admin</button>
+      </div>
+
+      <form id="guestForm" autocomplete="off">
+        <label class="field">
+          <span>your name (optional)</span>
+          <input id="guestName" maxlength="24" placeholder="guest">
+        </label>
+        <button class="btn primary" type="submit">&gt; enter as guest</button>
+        <p class="hint">No password needed. Look around, try the terminal.</p>
+      </form>
+
+      <form id="adminForm" hidden>
+        <label class="field">
+          <span>username</span>
+          <input id="adminUser" autocomplete="username" autocapitalize="off" spellcheck="false" required>
+        </label>
+        <label class="field">
+          <span>password</span>
+          <input id="adminPass" type="password" autocomplete="current-password" required>
+        </label>
+        <p class="error" id="loginError" aria-live="polite"></p>
+        <button class="btn admin" type="submit">&gt; sudo login</button>
+        <p class="hint">Admins can manage the projects list.</p>
+      </form>
+    </div>
+  </div>
 
   <div class="wrap">
     <nav>
       <a class="logo" href="#">off<span>duty</span>code</a>
-      <div class="status"><i class="dot" id="statusDot"></i><span id="statusText">checking shift…</span></div>
+      <div class="nav-right">
+        <div class="status"><i class="dot" id="statusDot"></i><span id="statusText">checking shift…</span></div>
+        <div class="user"><span id="userName">guest</span><span class="role" id="userRole">guest</span><button class="logout" id="logoutBtn">log out</button></div>
+      </div>
     </nav>
 
     <header class="hero">
@@ -188,6 +302,31 @@
       </div>
     </section>
 
+    <section id="projects" class="reveal">
+      <h2>Small projects</h2>
+      <p class="sub">Little things built after hours. Some finished, some still cooking.</p>
+      <ul class="plist" id="projectList"></ul>
+    </section>
+
+    <section id="admin" class="admin-section" hidden>
+      <h2>Admin panel <span class="role admin">admin</span></h2>
+      <p class="sub">Only visible to admins. Changes are saved in this browser.</p>
+      <div class="stats">
+        <div class="stat"><b id="statProjects">0</b><span>projects listed</span></div>
+        <div class="stat"><b id="statDone">0</b><span>shipped</span></div>
+        <div class="stat"><b id="statSince">--:--</b><span>logged in at</span></div>
+      </div>
+      <form class="add-form" id="addForm" autocomplete="off">
+        <label class="field"><span>project name</span><input id="pName" maxlength="40" required></label>
+        <label class="field"><span>short description</span><input id="pDesc" maxlength="90"></label>
+        <label class="field"><span>status</span>
+          <select id="pStatus"><option value="building">building</option><option value="shipped">shipped</option><option value="idea">idea</option></select>
+        </label>
+        <button class="btn primary" type="submit">+ add</button>
+      </form>
+      <button class="btn" id="resetProjects" type="button">reset to default list</button>
+    </section>
+
     <section class="reveal">
       <h2>Shift tracker</h2>
       <p class="sub">Based on your local time. Weekdays 9 to 6 are "on duty". Everything else is ours.</p>
@@ -207,11 +346,11 @@
       <h2>Try the terminal</h2>
       <p class="sub">Type <code>help</code> and press Enter. Or tap a command below.</p>
       <div class="term">
-        <div class="term-bar"><span></span><span></span><span></span><em>guest@offdutycode: ~</em></div>
+        <div class="term-bar"><span></span><span></span><span></span><em id="termTitle">guest@offdutycode: ~</em></div>
         <div class="term-body" id="termBody">
           <div id="termOut"></div>
           <div class="prompt-row">
-            <span class="prompt">guest@offduty:~$</span>
+            <span class="prompt" id="termPrompt">guest@offduty:~$</span>
             <input id="termIn" autocomplete="off" spellcheck="false" aria-label="Terminal input">
           </div>
         </div>
@@ -342,6 +481,141 @@
     }), { threshold: 0.15 });
     document.querySelectorAll(".reveal").forEach(el => io.observe(el));
 
+    /* ---------- Storage helpers (storage can be blocked, so never crash) ---------- */
+    const store = {
+      get(area, key) { try { return JSON.parse(window[area].getItem(key)); } catch { return null; } },
+      set(area, key, val) { try { window[area].setItem(key, JSON.stringify(val)); } catch {} },
+      del(area, key) { try { window[area].removeItem(key); } catch {} }
+    };
+
+    /* ---------- Login (guest / admin) ---------- */
+    // Front-end only: this keeps casual visitors out of the admin view,
+    // but it is not real security. Anyone can read this page's source.
+    const ADMIN_HASH = "040e1e1cc33501d5359a4954bf41c338903891cd2d3b6c9f5c31f61efc36efc8"; // sha256("user:pass")
+    let session = null;
+    const onLogin = [];
+
+    async function sha256(text) {
+      const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
+      return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, "0")).join("");
+    }
+
+    function applySession() {
+      const isAdmin = session && session.role === "admin";
+      document.body.classList.toggle("locked", !session);
+      document.getElementById("admin").hidden = !isAdmin;
+      if (!session) return;
+      document.getElementById("userName").textContent = session.name;
+      const roleEl = document.getElementById("userRole");
+      roleEl.textContent = session.role;
+      roleEl.classList.toggle("admin", isAdmin);
+      onLogin.forEach(fn => fn(session));
+    }
+
+    function login(role, name) {
+      session = { role, name, since: Date.now() };
+      store.set("sessionStorage", "odc.session", session);
+      applySession();
+      scrollTo(0, 0);
+    }
+
+    function logout() {
+      session = null;
+      store.del("sessionStorage", "odc.session");
+      document.getElementById("adminPass").value = "";
+      applySession();
+    }
+
+    (() => {
+      const tabs = document.querySelectorAll(".tab");
+      const guestForm = document.getElementById("guestForm");
+      const adminForm = document.getElementById("adminForm");
+      const err = document.getElementById("loginError");
+      const box = document.getElementById("loginBox");
+
+      tabs.forEach(t => t.addEventListener("click", () => {
+        tabs.forEach(x => x.setAttribute("aria-selected", x === t));
+        const admin = t.dataset.role === "admin";
+        guestForm.hidden = admin; adminForm.hidden = !admin;
+        err.textContent = "";
+      }));
+
+      guestForm.addEventListener("submit", e => {
+        e.preventDefault();
+        const raw = document.getElementById("guestName").value.trim();
+        const name = raw.replace(/[^\w.-]/g, "").toLowerCase() || "guest";
+        login("guest", name);
+      });
+
+      adminForm.addEventListener("submit", async e => {
+        e.preventDefault();
+        const user = document.getElementById("adminUser").value.trim().toLowerCase();
+        const pass = document.getElementById("adminPass").value;
+        try {
+          if (await sha256(`${user}:${pass}`) === ADMIN_HASH) { err.textContent = ""; login("admin", user); return; }
+          err.textContent = "access denied. wrong username or password.";
+        } catch {
+          err.textContent = "login needs a secure (https) page.";
+        }
+        box.classList.remove("shake"); void box.offsetWidth; box.classList.add("shake");
+      });
+
+      document.getElementById("logoutBtn").addEventListener("click", logout);
+    })();
+
+    /* ---------- Projects + admin panel ---------- */
+    (() => {
+      const DEFAULTS = [
+        { name: "offdutycode.com", desc: "This site. Starfield, shift clock and a tiny terminal.", status: "shipped" },
+        { name: "secret-project-1", desc: "Loading… details when it works.", status: "building" },
+        { name: "ideas.txt", desc: "47 ideas, 0 regrets. Waiting for a free weekend.", status: "idea" }
+      ];
+      let projects = store.get("localStorage", "odc.projects") || DEFAULTS.slice();
+      const list = document.getElementById("projectList");
+      const save = () => store.set("localStorage", "odc.projects", projects);
+
+      function render() {
+        const isAdmin = session && session.role === "admin";
+        list.innerHTML = "";
+        projects.forEach((p, i) => {
+          const li = document.createElement("li");
+          const text = document.createElement("div"); text.className = "ptext";
+          const n = document.createElement("div"); n.className = "pname"; n.textContent = p.name;
+          const d = document.createElement("div"); d.className = "pdesc"; d.textContent = p.desc || "";
+          text.append(n, d);
+          const tag = document.createElement("span");
+          tag.className = "tag" + (p.status === "shipped" ? " done" : ""); tag.textContent = p.status;
+          li.append(text, tag);
+          if (isAdmin) {
+            const del = document.createElement("button");
+            del.className = "del"; del.textContent = "remove"; del.setAttribute("aria-label", `Remove ${p.name}`);
+            del.onclick = () => { projects.splice(i, 1); save(); render(); };
+            li.append(del);
+          }
+          list.append(li);
+        });
+        document.getElementById("statProjects").textContent = projects.length;
+        document.getElementById("statDone").textContent = projects.filter(p => p.status === "shipped").length;
+        if (session) document.getElementById("statSince").textContent =
+          new Date(session.since).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false });
+      }
+
+      document.getElementById("addForm").addEventListener("submit", e => {
+        e.preventDefault();
+        const name = document.getElementById("pName").value.trim();
+        if (!name) return;
+        projects.push({ name, desc: document.getElementById("pDesc").value.trim(), status: document.getElementById("pStatus").value });
+        save(); render(); e.target.reset();
+      });
+      document.getElementById("resetProjects").addEventListener("click", () => {
+        projects = DEFAULTS.slice(); store.del("localStorage", "odc.projects"); render();
+      });
+
+      window.getProjects = () => projects;
+      onLogin.push(render);
+      render();
+    })();
+
     /* ---------- Terminal ---------- */
     (() => {
       const out = document.getElementById("termOut");
@@ -356,6 +630,12 @@
         "Talk is cheap. Show me the code. — Linus Torvalds",
         "Make it work, make it right, make it fast. — Kent Beck"
       ];
+
+      const who = () => (session ? session.name : "guest");
+      onLogin.push(s => {
+        document.getElementById("termPrompt").textContent = `${s.name}@offduty:~$`;
+        document.getElementById("termTitle").textContent = `${s.name}@offdutycode: ~`;
+      });
 
       function print(text, cls = "") {
         const div = document.createElement("div");
@@ -377,13 +657,18 @@
           ["  joke       a programmer joke"],
           ["  date       current date and time"],
           ["  echo TEXT  repeat after me"],
+          ["  whoami     who am I logged in as"],
+          ["  logout     clock out"],
           ["  clear      clean the screen"]
         ],
         about: () => [
           ["offdutycode = code written after the day job ends."],
           ["Side projects, experiments and notes. No deadlines, no standups.", "muted"]
         ],
-        whoami: () => [["guest. welcome, make yourself at home.", "ok"]],
+        whoami: () => session && session.role === "admin"
+          ? [[`${session.name} (admin). full access granted.`, "hl"]]
+          : [[`${who()} (guest). welcome, make yourself at home.`, "ok"]],
+        logout: () => { setTimeout(logout, 400); return [["clocking out… 👋", "muted"]]; },
         status: () => {
           const { onDuty } = shiftInfo();
           return onDuty
@@ -391,11 +676,10 @@
             : [["● off duty. editor open. building things.", "ok"]];
         },
         ls: () => [["projects/  notes/  experiments/  ideas.txt  coffee.log", "hl"]],
-        projects: () => [
-          ["[■■■■■■■□□□] offdutycode.com   — you're looking at it", "ok"],
-          ["[■■■□□□□□□□] secret-project-1  — loading…", "muted"],
-          ["[■□□□□□□□□□] ideas.txt         — 47 ideas, 0 regrets", "muted"]
-        ],
+        projects: () => window.getProjects().map(p => {
+          const bar = { shipped: "■■■■■■■■■■", building: "■■■■□□□□□□", idea: "■□□□□□□□□□" }[p.status] || "□□□□□□□□□□";
+          return [`[${bar}] ${p.name.padEnd(18)} ${p.desc ? "— " + p.desc : ""}`, p.status === "shipped" ? "ok" : "muted"];
+        }),
         "cat": (args) => {
           if (args[0] === "ideas.txt") return [["1. build the thing\n2. ship the thing\n3. repeat", "muted"]];
           if (args[0] === "coffee.log") return [[`cups today: ${coffees.n}`, "muted"]];
@@ -418,14 +702,16 @@
         },
         date: () => [[new Date().toString(), "muted"]],
         echo: (args) => [[args.join(" ")]],
-        sudo: () => [["nice try. permission denied. 😄", "warn"]],
+        sudo: () => session && session.role === "admin"
+          ? [["you're already admin. with great power… 🦸", "hl"]]
+          : [["nice try. permission denied. 😄", "warn"]],
         exit: () => [["you can't clock out of off-duty. 🌙", "hl"]],
         clear: () => { out.innerHTML = ""; return []; }
       };
 
       function run(raw) {
         const line = raw.trim();
-        print(`guest@offduty:~$ ${line}`, "muted");
+        print(`${who()}@offduty:~$ ${line}`, "muted");
         if (!line) return;
         history.push(line); hIdx = history.length;
         const [name, ...args] = line.split(/\s+/);
@@ -456,6 +742,10 @@
       print("welcome to offdutycode v1.0 🌙", "ok");
       print("type 'help' to see what you can do.", "muted");
     })();
+
+    /* ---------- Restore login for this tab ---------- */
+    session = store.get("sessionStorage", "odc.session");
+    applySession();
   </script>
 </body>
 </html>

@@ -16,6 +16,8 @@ The day job pays the bills. The nights are for building whatever seems fun.
 
 The site is a single static page (`index.html`) with no build step and no dependencies. It includes:
 
+- A login screen: enter as a **guest** (no password) or as an **admin**
+- An admin panel for adding and removing projects (saved in the admin's browser)
 - An animated starfield background
 - A typing hero headline
 - A shift tracker that shows whether you're "on duty" (weekdays 9 to 6, your local time)
