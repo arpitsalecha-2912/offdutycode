@@ -2,750 +2,695 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>OffDutyCode</title>
-  <meta name="description" content="OffDutyCode — side projects, experiments and ideas, built after hours.">
-  <meta name="theme-color" content="#07090f">
+  <meta name="description" content="OffDutyCode: small websites and experiments, built after hours.">
+  <meta name="theme-color" content="#06070d">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌙</text></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #07090f;
-      --panel: rgba(18, 22, 34, 0.72);
-      --border: rgba(140, 160, 255, 0.14);
-      --fg: #e9ecf5;
-      --muted: #8b93a7;
-      --accent: #7cd992;
-      --accent-2: #9d8cff;
-      --warn: #ffcf6b;
+      --bg: #06070d;
+      --surface: rgba(255, 255, 255, 0.04);
+      --surface-2: rgba(255, 255, 255, 0.07);
+      --line: rgba(255, 255, 255, 0.09);
+      --line-2: rgba(255, 255, 255, 0.16);
+      --fg: #eef0f7;
+      --muted: #9097ab;
+      --green: #7cd992;
+      --violet: #9d8cff;
+      --pink: #ff7ac6;
+      --red: #ff8a8a;
       --mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
       --sans: "Space Grotesk", system-ui, sans-serif;
+      --radius: 20px;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
+    html { -webkit-text-size-adjust: 100%; }
     body {
-      background: var(--bg);
-      color: var(--fg);
-      font-family: var(--sans);
-      line-height: 1.6;
-      overflow-x: hidden;
+      min-height: 100vh; background: var(--bg); color: var(--fg);
+      font-family: var(--sans); line-height: 1.55; overflow-x: hidden;
     }
-    #sky { position: fixed; inset: 0; z-index: -2; }
-    .glow {
-      position: fixed; z-index: -1; pointer-events: none;
-      width: 60vmax; height: 60vmax; border-radius: 50%;
-      filter: blur(90px); opacity: 0.18;
-    }
-    .glow.a { background: var(--accent-2); top: -25vmax; right: -20vmax; }
-    .glow.b { background: var(--accent); bottom: -30vmax; left: -25vmax; opacity: 0.1; }
+    button, input { font: inherit; color: inherit; }
+    button { cursor: pointer; }
+    a { color: inherit; }
+    [hidden] { display: none !important; }
+    :focus-visible { outline: 2px solid var(--violet); outline-offset: 2px; }
 
-    .wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+    /* ---------- Background ---------- */
+    .bg { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+    .blob { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.35; animation: drift 22s ease-in-out infinite alternate; }
+    .blob.b1 { width: 55vmax; height: 55vmax; background: var(--violet); top: -25vmax; right: -15vmax; }
+    .blob.b2 { width: 45vmax; height: 45vmax; background: var(--green); bottom: -25vmax; left: -15vmax; opacity: 0.18; animation-delay: -8s; }
+    .blob.b3 { width: 30vmax; height: 30vmax; background: var(--pink); top: 40%; left: 45%; opacity: 0.12; animation-delay: -14s; }
+    @keyframes drift { to { transform: translate(-6vmax, 5vmax) scale(1.12); } }
+    .grid-lines {
+      position: absolute; inset: 0;
+      background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px);
+      background-size: 56px 56px; opacity: 0.35;
+      mask-image: radial-gradient(ellipse at 50% 0%, #000 0%, transparent 70%);
+      -webkit-mask-image: radial-gradient(ellipse at 50% 0%, #000 0%, transparent 70%);
+    }
 
-    /* Nav */
-    nav { display: flex; justify-content: space-between; align-items: center; padding: 20px 0; }
-    .logo { font-family: var(--mono); font-weight: 700; color: var(--fg); text-decoration: none; }
-    .logo span { color: var(--accent); }
-    .status {
-      font-family: var(--mono); font-size: 0.78rem; color: var(--muted);
-      display: flex; align-items: center; gap: 8px;
-      border: 1px solid var(--border); border-radius: 999px; padding: 6px 12px;
-      background: var(--panel);
-    }
-    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 10px var(--accent); }
-    .dot.busy { background: var(--warn); box-shadow: 0 0 10px var(--warn); }
+    .wrap { width: 100%; max-width: 1080px; margin: 0 auto; padding: 0 16px; }
+    .logo { font-family: var(--mono); font-weight: 600; font-size: 1rem; text-decoration: none; letter-spacing: -0.01em; }
+    .logo span { color: var(--green); }
+    .grad { background: linear-gradient(100deg, var(--green), var(--violet) 55%, var(--pink)); -webkit-background-clip: text; background-clip: text; color: transparent; }
 
-    /* Hero */
-    .hero { min-height: 78vh; display: flex; flex-direction: column; justify-content: center; padding: 40px 0; }
-    .kicker { font-family: var(--mono); color: var(--accent); font-size: 0.9rem; margin-bottom: 16px; }
-    h1 {
-      font-size: clamp(2.6rem, 9vw, 5.5rem); line-height: 1.02; letter-spacing: -0.03em; font-weight: 700;
-    }
-    h1 .grad {
-      background: linear-gradient(90deg, var(--accent), var(--accent-2));
-      -webkit-background-clip: text; background-clip: text; color: transparent;
-    }
-    .typed { font-family: var(--mono); font-size: clamp(1rem, 3vw, 1.3rem); color: var(--muted); margin-top: 24px; min-height: 2em; }
-    .typed b { color: var(--fg); font-weight: 400; }
-    .cursor { display: inline-block; width: 0.55em; height: 1.1em; background: var(--accent); vertical-align: text-bottom; margin-left: 2px; animation: blink 1s steps(1) infinite; }
-    @keyframes blink { 50% { opacity: 0; } }
-    .cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 36px; }
+    /* ---------- Buttons + inputs ---------- */
     .btn {
-      font-family: var(--mono); font-size: 0.9rem; text-decoration: none;
-      padding: 12px 20px; border-radius: 10px; border: 1px solid var(--border);
-      color: var(--fg); background: var(--panel); transition: transform .15s, border-color .15s;
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 13px 18px; border-radius: 14px; border: 1px solid var(--line-2);
+      background: var(--surface-2); font-weight: 600; text-decoration: none; transition: transform .15s, background .15s, border-color .15s;
     }
-    .btn:hover { transform: translateY(-2px); border-color: var(--accent); }
-    .btn.primary { background: var(--accent); color: #06210f; border-color: var(--accent); font-weight: 700; }
+    .btn:hover { transform: translateY(-1px); border-color: rgba(255,255,255,0.3); }
+    .btn:active { transform: translateY(0); }
+    .btn.green { background: var(--green); border-color: var(--green); color: #06210f; }
+    .btn.violet { background: var(--violet); border-color: var(--violet); color: #140b3a; }
+    .btn.ghost { background: transparent; }
+    .btn.small { padding: 8px 12px; border-radius: 11px; font-size: 0.85rem; }
+    .btn[disabled] { opacity: 0.6; pointer-events: none; }
+    .field { display: block; margin-bottom: 12px; }
+    .field > span { display: block; font-size: 0.8rem; color: var(--muted); margin-bottom: 6px; }
+    .input {
+      width: 100%; font-size: 1rem; background: rgba(0,0,0,0.3); border: 1px solid var(--line);
+      border-radius: 12px; padding: 12px 14px; outline: 0; transition: border-color .15s, background .15s;
+    }
+    .input:focus { border-color: var(--violet); background: rgba(0,0,0,0.45); }
+    .input::placeholder { color: #5d6478; }
 
-    /* Sections */
-    section { padding: 64px 0; }
-    h2 { font-size: clamp(1.6rem, 4vw, 2.2rem); letter-spacing: -0.02em; margin-bottom: 8px; }
-    .sub { color: var(--muted); margin-bottom: 32px; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+    /* ---------- Login ---------- */
+    #login { min-height: 100vh; display: flex; flex-direction: column; }
+    .login-top { display: flex; align-items: center; justify-content: space-between; padding: 22px 0; }
+    .pill {
+      display: inline-flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 0.75rem; color: var(--muted);
+      border: 1px solid var(--line); background: var(--surface); padding: 6px 12px; border-radius: 999px;
+    }
+    .pulse { width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 0 rgba(124,217,146,0.6); animation: pulse 2s infinite; }
+    @keyframes pulse { 70% { box-shadow: 0 0 0 8px rgba(124,217,146,0); } 100% { box-shadow: 0 0 0 0 rgba(124,217,146,0); } }
+    .login-main { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 24px 0 48px; }
+    .login-head { text-align: center; margin-bottom: 40px; }
+    .login-head h1 { font-size: clamp(2.3rem, 7.5vw, 4.4rem); line-height: 1.03; letter-spacing: -0.035em; font-weight: 700; }
+    .login-head p { color: var(--muted); margin-top: 16px; font-size: clamp(1rem, 2.6vw, 1.15rem); max-width: 520px; margin-inline: auto; }
+    .doors { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; max-width: 820px; margin: 0 auto; width: 100%; }
+    .door {
+      position: relative; background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+      border: 1px solid var(--line); border-radius: 24px; padding: 26px 24px 24px;
+      backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+      display: flex; flex-direction: column; transition: border-color .2s, transform .2s;
+    }
+    .door::before {
+      content: ""; position: absolute; inset: -1px; border-radius: inherit; padding: 1px; pointer-events: none;
+      background: linear-gradient(140deg, var(--door), transparent 45%);
+      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor; mask-composite: exclude; opacity: 0.6;
+    }
+    .door.guest { --door: var(--green); }
+    .door.admin { --door: var(--violet); }
+    .door:hover { transform: translateY(-3px); }
+    .door-icon {
+      width: 48px; height: 48px; border-radius: 14px; display: grid; place-items: center; font-size: 1.5rem; margin-bottom: 16px;
+      background: color-mix(in srgb, var(--door) 16%, transparent); border: 1px solid color-mix(in srgb, var(--door) 35%, transparent);
+    }
+    .door h2 { font-size: 1.35rem; letter-spacing: -0.02em; }
+    .door > p { color: var(--muted); font-size: 0.95rem; margin: 4px 0 20px; }
+    .door form { margin-top: auto; }
+    .door .btn { width: 100%; margin-top: 4px; }
+    .error { color: var(--red); font-size: 0.85rem; min-height: 1.3em; margin: 2px 0 6px; }
+    .shake { animation: shake .4s; }
+    @keyframes shake { 20%, 60% { transform: translateX(-6px); } 40%, 80% { transform: translateX(6px); } }
+    .login-foot { text-align: center; color: var(--muted); font-family: var(--mono); font-size: 0.75rem; padding: 0 0 28px; }
+
+    /* ---------- App ---------- */
+    .topbar {
+      position: sticky; top: 0; z-index: 5; border-bottom: 1px solid var(--line);
+      background: rgba(6, 7, 13, 0.7); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    }
+    .topbar .wrap { display: flex; align-items: center; gap: 10px; height: 62px; }
+    .topbar .logo { margin-right: auto; }
+    .who { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; }
+    .role { font-family: var(--mono); font-size: 0.68rem; padding: 2px 8px; border-radius: 99px; background: rgba(124,217,146,0.14); color: var(--green); }
+    .role.admin { background: rgba(157,140,255,0.16); color: var(--violet); }
+    .icon-btn { width: 38px; height: 38px; border-radius: 11px; border: 1px solid var(--line); background: var(--surface); display: grid; place-items: center; font-size: 1rem; }
+    .icon-btn:hover { border-color: var(--line-2); }
+
+    .intro { padding: 40px 0 24px; }
+    .intro h1 { font-size: clamp(1.9rem, 5.5vw, 2.9rem); letter-spacing: -0.03em; line-height: 1.1; }
+    .intro p { color: var(--muted); margin-top: 8px; max-width: 560px; }
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 24px; }
+    .stat { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 14px 16px; }
+    .stat b { display: block; font-family: var(--mono); font-size: 1.6rem; font-weight: 600; line-height: 1.2; }
+    .stat span { color: var(--muted); font-size: 0.8rem; }
+    .sync {
+      display: flex; align-items: center; gap: 10px; margin-top: 12px; padding: 12px 14px; border-radius: 14px;
+      border: 1px solid var(--line); background: var(--surface); font-size: 0.88rem; color: var(--muted); width: 100%; text-align: left;
+    }
+    .sync .dot { width: 8px; height: 8px; border-radius: 50%; background: #e3b341; flex-shrink: 0; }
+    .sync.on .dot { background: var(--green); }
+    .sync b { color: var(--fg); font-weight: 600; }
+    .sync em { margin-left: auto; font-style: normal; color: var(--violet); white-space: nowrap; }
+
+    .toolbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 8px 0 18px; }
+    .search { position: relative; flex: 1 1 240px; }
+    .search .input { padding-left: 38px; }
+    .search::before { content: "⌕"; position: absolute; left: 14px; top: 50%; transform: translateY(-52%); color: var(--muted); font-size: 1.1rem; }
+    .seg { display: inline-flex; padding: 4px; gap: 4px; border: 1px solid var(--line); border-radius: 13px; background: var(--surface); }
+    .seg button { border: 0; background: transparent; padding: 8px 12px; border-radius: 9px; font-size: 0.85rem; color: var(--muted); }
+    .seg button[aria-pressed="true"] { background: var(--surface-2); color: var(--fg); }
+
+    .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 16px; padding-bottom: 56px; }
     .card {
-      background: var(--panel); border: 1px solid var(--border); border-radius: 16px; padding: 24px;
-      backdrop-filter: blur(8px); transition: transform .2s, border-color .2s;
+      --h: 260; position: relative; display: flex; flex-direction: column; gap: 4px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.055), rgba(255,255,255,0.02));
+      border: 1px solid var(--line); border-radius: var(--radius); padding: 20px;
+      transition: transform .2s, border-color .2s, box-shadow .2s;
     }
-    .card:hover { transform: translateY(-4px); border-color: rgba(124, 217, 146, 0.4); }
-    .card .icon { font-size: 1.8rem; margin-bottom: 12px; }
-    .card h3 { font-size: 1.15rem; margin-bottom: 6px; }
-    .card p { color: var(--muted); font-size: 0.95rem; }
+    .card:hover { transform: translateY(-3px); border-color: hsla(var(--h), 80%, 70%, 0.35); box-shadow: 0 18px 50px -20px hsla(var(--h), 80%, 60%, 0.45); }
+    .card-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 10px; }
+    .tile {
+      width: 52px; height: 52px; border-radius: 15px; display: grid; place-items: center; font-size: 1.6rem;
+      background: linear-gradient(140deg, hsla(var(--h), 85%, 65%, 0.28), hsla(calc(var(--h) + 40), 85%, 60%, 0.1));
+      border: 1px solid hsla(var(--h), 85%, 70%, 0.3);
+    }
+    .badge { font-family: var(--mono); font-size: 0.68rem; padding: 3px 9px; border-radius: 99px; border: 1px solid var(--line); color: var(--muted); }
+    .badge.public { color: var(--green); border-color: rgba(124,217,146,0.35); background: rgba(124,217,146,0.08); }
+    .card h3 { font-size: 1.18rem; letter-spacing: -0.015em; }
+    .card p { color: var(--muted); font-size: 0.93rem; flex: 1; }
+    .card .path { font-family: var(--mono); font-size: 0.72rem; color: #626a80; margin-top: 6px; }
+    .card-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line); }
+    .card-foot .btn { margin-left: auto; }
 
-    /* Clock */
-    .clock {
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; align-items: center;
-      background: var(--panel); border: 1px solid var(--border); border-radius: 16px; padding: 28px;
-    }
-    .time { font-family: var(--mono); font-size: clamp(2.2rem, 7vw, 3.4rem); font-weight: 700; }
-    .shift { font-family: var(--mono); color: var(--muted); }
-    .shift strong { color: var(--accent); }
-    .bar { height: 8px; border-radius: 99px; background: rgba(255,255,255,0.06); overflow: hidden; margin-top: 12px; }
-    .bar i { display: block; height: 100%; background: linear-gradient(90deg, var(--accent-2), var(--accent)); width: 0; transition: width .6s; }
+    .switch { display: inline-flex; align-items: center; gap: 10px; font-size: 0.85rem; color: var(--muted); cursor: pointer; user-select: none; }
+    .switch input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+    .track { width: 42px; height: 24px; border-radius: 99px; background: rgba(255,255,255,0.12); position: relative; transition: background .2s; flex-shrink: 0; }
+    .track::after { content: ""; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: #fff; transition: transform .2s; box-shadow: 0 1px 3px rgba(0,0,0,0.4); }
+    .switch input:checked + .track { background: var(--green); }
+    .switch input:checked + .track::after { transform: translateX(18px); }
+    .switch input:focus-visible + .track { outline: 2px solid var(--violet); outline-offset: 2px; }
+    .switch input:checked ~ .lbl { color: var(--fg); }
+    .switch.busy { opacity: 0.6; pointer-events: none; }
 
-    /* Terminal */
-    .term {
-      background: #0b0e16; border: 1px solid var(--border); border-radius: 14px; overflow: hidden;
-      box-shadow: 0 30px 80px rgba(0,0,0,0.5); font-family: var(--mono); font-size: 0.9rem;
-    }
-    .term-bar { display: flex; gap: 8px; padding: 12px 14px; background: #121624; border-bottom: 1px solid var(--border); }
-    .term-bar span { width: 12px; height: 12px; border-radius: 50%; }
-    .term-bar span:nth-child(1) { background: #ff5f57; }
-    .term-bar span:nth-child(2) { background: #febc2e; }
-    .term-bar span:nth-child(3) { background: #28c840; }
-    .term-bar em { margin-left: auto; color: var(--muted); font-style: normal; font-size: 0.78rem; }
-    .term-body { padding: 16px; height: 320px; overflow-y: auto; cursor: text; }
-    .term-body .line { white-space: pre-wrap; word-break: break-word; }
-    .term-body .muted { color: var(--muted); }
-    .term-body .ok { color: var(--accent); }
-    .term-body .hl { color: var(--accent-2); }
-    .term-body .warn { color: var(--warn); }
-    .prompt-row { display: flex; gap: 8px; }
-    .prompt { color: var(--accent); flex-shrink: 0; }
-    .term input {
-      flex: 1; min-width: 0; background: transparent; border: 0; outline: 0;
-      color: var(--fg); font: inherit; caret-color: var(--accent);
-    }
-    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
-    .chip {
-      font-family: var(--mono); font-size: 0.8rem; color: var(--muted); background: var(--panel);
-      border: 1px solid var(--border); border-radius: 999px; padding: 4px 12px; cursor: pointer;
-    }
-    .chip:hover { color: var(--fg); border-color: var(--accent); }
+    .skeleton { min-height: 220px; background: linear-gradient(90deg, var(--surface) 0%, var(--surface-2) 50%, var(--surface) 100%); background-size: 200% 100%; animation: shimmer 1.4s infinite; border: 1px solid var(--line); border-radius: var(--radius); }
+    @keyframes shimmer { to { background-position: -200% 0; } }
+    .empty { grid-column: 1 / -1; text-align: center; padding: 56px 16px; border: 1px dashed var(--line-2); border-radius: var(--radius); color: var(--muted); }
+    .empty b { display: block; font-size: 2rem; margin-bottom: 8px; }
+    .empty code { font-family: var(--mono); color: var(--fg); }
 
-    /* Login */
-    body.locked { overflow: hidden; }
-    body.locked .wrap { display: none; }
-    body:not(.locked) .login { display: none; }
-    .login {
-      position: fixed; inset: 0; z-index: 10; overflow-y: auto;
-      display: flex; align-items: center; justify-content: center; padding: 24px 16px;
-    }
-    .login-box {
-      width: 100%; max-width: 420px; background: var(--panel); border: 1px solid var(--border);
-      border-radius: 18px; padding: 28px 24px; backdrop-filter: blur(12px);
-      box-shadow: 0 30px 80px rgba(0,0,0,0.5);
-    }
-    .login-box .logo { display: block; font-size: 1.3rem; margin-bottom: 4px; }
-    .login-box .sub { margin-bottom: 22px; font-size: 0.95rem; }
-    .tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 4px; border-radius: 12px; background: rgba(255,255,255,0.04); border: 1px solid var(--border); margin-bottom: 20px; }
-    .tab {
-      font-family: var(--mono); font-size: 0.88rem; padding: 10px; border: 0; border-radius: 9px;
-      background: transparent; color: var(--muted); cursor: pointer;
-    }
-    .tab[aria-selected="true"] { background: var(--accent); color: #06210f; font-weight: 700; }
-    .tab[data-role="admin"][aria-selected="true"] { background: var(--accent-2); color: #120a33; }
-    .field { display: block; margin-bottom: 14px; }
-    .field span { display: block; font-family: var(--mono); font-size: 0.78rem; color: var(--muted); margin-bottom: 6px; }
-    .field input {
-      width: 100%; font: inherit; font-size: 1rem; color: var(--fg); background: #0b0e16;
-      border: 1px solid var(--border); border-radius: 10px; padding: 11px 12px; outline: 0;
-    }
-    .field input:focus { border-color: var(--accent); }
-    .login-box .btn { width: 100%; cursor: pointer; font-size: 0.95rem; }
-    .login-box .btn.admin { background: var(--accent-2); border-color: var(--accent-2); color: #120a33; font-weight: 700; }
-    .hint { font-family: var(--mono); font-size: 0.78rem; color: var(--muted); margin-top: 14px; text-align: center; }
-    .error { font-family: var(--mono); font-size: 0.82rem; color: #ff8a8a; min-height: 1.3em; margin: -4px 0 10px; }
-    .shake { animation: shake .35s; }
-    @keyframes shake { 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+    /* ---------- Viewer ---------- */
+    #viewer { position: fixed; inset: 0; z-index: 20; background: var(--bg); display: flex; flex-direction: column; }
+    .viewer-bar { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-bottom: 1px solid var(--line); background: rgba(6,7,13,0.9); }
+    .viewer-bar strong { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: center; font-size: 0.95rem; }
+    #frame { flex: 1; width: 100%; border: 0; background: #fff; }
 
-    /* Nav user */
-    nav { flex-wrap: wrap; gap: 10px; }
-    .nav-right { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
-    .user {
-      font-family: var(--mono); font-size: 0.78rem; display: flex; align-items: center; gap: 8px;
-      border: 1px solid var(--border); border-radius: 999px; padding: 4px 4px 4px 12px; background: var(--panel);
+    /* ---------- Dialog + toast ---------- */
+    dialog {
+      margin: auto; width: min(480px, calc(100% - 32px)); max-height: calc(100% - 32px); overflow-y: auto;
+      background: #0e1019; color: var(--fg); border: 1px solid var(--line-2); border-radius: 22px; padding: 24px;
     }
-    .role { font-size: 0.7rem; padding: 1px 7px; border-radius: 99px; background: rgba(124,217,146,0.15); color: var(--accent); }
-    .role.admin { background: rgba(157,140,255,0.18); color: var(--accent-2); }
-    .logout {
-      font: inherit; font-size: 0.75rem; color: var(--muted); background: rgba(255,255,255,0.05);
-      border: 0; border-radius: 99px; padding: 4px 10px; cursor: pointer;
+    dialog::backdrop { background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); }
+    dialog h2 { font-size: 1.3rem; letter-spacing: -0.02em; margin-bottom: 6px; }
+    dialog p, dialog li { color: var(--muted); font-size: 0.92rem; }
+    dialog ol { padding-left: 20px; margin: 12px 0 16px; display: grid; gap: 6px; }
+    dialog li b { color: var(--fg); font-weight: 600; }
+    dialog .row { display: flex; gap: 10px; margin-top: 8px; }
+    dialog .row .btn { flex: 1; }
+    .note { margin-top: 14px; font-size: 0.8rem !important; }
+    .connected { padding: 14px; border-radius: 14px; background: rgba(124,217,146,0.08); border: 1px solid rgba(124,217,146,0.3); color: var(--fg) !important; margin: 12px 0; }
+    #toast {
+      position: fixed; left: 50%; bottom: max(20px, env(safe-area-inset-bottom)); transform: translate(-50%, 140%); z-index: 30;
+      max-width: calc(100% - 32px); padding: 12px 18px; border-radius: 14px; font-size: 0.9rem;
+      background: #171a26; border: 1px solid var(--line-2); box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+      visibility: hidden; transition: transform .3s, visibility .3s;
     }
-    .logout:hover { color: var(--fg); }
+    #toast.show { transform: translate(-50%, 0); visibility: visible; }
+    #toast.error { border-color: rgba(255,138,138,0.5); }
 
-    /* Projects + admin */
-    .plist { display: grid; gap: 10px; list-style: none; }
-    .plist li {
-      display: flex; align-items: center; gap: 12px; background: var(--panel); border: 1px solid var(--border);
-      border-radius: 12px; padding: 14px 16px;
+    @media (max-width: 680px) {
+      .doors { grid-template-columns: 1fr; }
+      .login-head { margin-bottom: 28px; }
+      .who .name { display: none; }
+      .stat b { font-size: 1.3rem; }
+      .stat { padding: 12px; }
     }
-    .plist .pname { font-weight: 600; }
-    .plist .pdesc { color: var(--muted); font-size: 0.92rem; }
-    .plist .ptext { flex: 1; min-width: 0; }
-    .tag { font-family: var(--mono); font-size: 0.72rem; padding: 2px 8px; border-radius: 99px; border: 1px solid var(--border); color: var(--muted); white-space: nowrap; }
-    .tag.done { color: var(--accent); border-color: rgba(124,217,146,0.4); }
-    .del { font: inherit; font-size: 0.8rem; color: #ff8a8a; background: transparent; border: 1px solid rgba(255,138,138,0.3); border-radius: 8px; padding: 4px 8px; cursor: pointer; }
-    .admin-panel { border-color: rgba(157,140,255,0.35); }
-    .admin-panel h2 .role { font-size: 0.8rem; vertical-align: middle; }
-    .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 24px; }
-    .stat { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; }
-    .stat b { display: block; font-family: var(--mono); font-size: 1.4rem; }
-    .stat span { color: var(--muted); font-size: 0.82rem; }
-    .add-form { display: grid; grid-template-columns: 1fr 1fr auto auto; gap: 10px; align-items: end; margin-bottom: 16px; }
-    .add-form .field { margin: 0; }
-    .add-form select { width: 100%; font: inherit; color: var(--fg); background: #0b0e16; border: 1px solid var(--border); border-radius: 10px; padding: 11px 10px; }
-    .add-form .btn { cursor: pointer; }
-    @media (max-width: 640px) { .add-form { grid-template-columns: 1fr; } }
-
-    footer { padding: 48px 0 40px; color: var(--muted); font-family: var(--mono); font-size: 0.8rem; text-align: center; }
-    footer a { color: var(--muted); }
-
-    .reveal { opacity: 0; transform: translateY(24px); transition: opacity .7s ease, transform .7s ease; }
-    .reveal.in { opacity: 1; transform: none; }
-
     @media (prefers-reduced-motion: reduce) {
-      * { animation: none !important; transition: none !important; }
-      .reveal { opacity: 1; transform: none; }
+      *, *::before, *::after { animation: none !important; transition: none !important; }
     }
   </style>
 </head>
-<body class="locked">
-  <canvas id="sky" aria-hidden="true"></canvas>
-  <div class="glow a"></div><div class="glow b"></div>
+<body>
+  <div class="bg" aria-hidden="true"><div class="grid-lines"></div><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div></div>
 
-  <!-- Login screen -->
-  <div class="login" id="login">
-    <div class="login-box" id="loginBox">
+  <!-- ============ Login ============ -->
+  <div id="login" class="wrap">
+    <div class="login-top">
       <span class="logo">off<span>duty</span>code</span>
-      <p class="sub">Clocked out. Still shipping. Who's checking in?</p>
-
-      <div class="tabs" role="tablist">
-        <button class="tab" role="tab" data-role="guest" aria-selected="true">👋 Guest</button>
-        <button class="tab" role="tab" data-role="admin" aria-selected="false">🔐 Admin</button>
-      </div>
-
-      <form id="guestForm" autocomplete="off">
-        <label class="field">
-          <span>your name (optional)</span>
-          <input id="guestName" maxlength="24" placeholder="guest">
-        </label>
-        <button class="btn primary" type="submit">&gt; enter as guest</button>
-        <p class="hint">No password needed. Look around, try the terminal.</p>
-      </form>
-
-      <form id="adminForm" hidden>
-        <label class="field">
-          <span>username</span>
-          <input id="adminUser" autocomplete="username" autocapitalize="off" spellcheck="false" required>
-        </label>
-        <label class="field">
-          <span>password</span>
-          <input id="adminPass" type="password" autocomplete="current-password" required>
-        </label>
-        <p class="error" id="loginError" aria-live="polite"></p>
-        <button class="btn admin" type="submit">&gt; sudo login</button>
-        <p class="hint">Admins can manage the projects list.</p>
-      </form>
+      <span class="pill"><i class="pulse"></i><span id="clock">--:--</span></span>
     </div>
+    <main class="login-main">
+      <div class="login-head">
+        <h1>Small websites,<br><span class="grad">built after hours.</span></h1>
+        <p>A little lab of tools and experiments made when the day job ends. Choose how you're coming in.</p>
+      </div>
+      <div class="doors">
+        <section class="door guest">
+          <div class="door-icon">👋</div>
+          <h2>Guest</h2>
+          <p>Look around the public projects. No password needed.</p>
+          <form id="guestForm" autocomplete="off">
+            <label class="field"><span>Your name (optional)</span><input class="input" id="guestName" maxlength="24" placeholder="guest"></label>
+            <button class="btn green" type="submit">Enter as guest →</button>
+          </form>
+        </section>
+        <section class="door admin" id="adminDoor">
+          <div class="door-icon">🔐</div>
+          <h2>Admin</h2>
+          <p>Open every page and choose what guests can see.</p>
+          <form id="adminForm">
+            <label class="field"><span>Username</span><input class="input" id="adminUser" autocomplete="username" autocapitalize="off" spellcheck="false" required></label>
+            <label class="field"><span>Password</span><input class="input" id="adminPass" type="password" autocomplete="current-password" required></label>
+            <p class="error" id="loginError" aria-live="polite"></p>
+            <button class="btn violet" type="submit">Sign in →</button>
+          </form>
+        </section>
+      </div>
+    </main>
+    <p class="login-foot">offdutycode.com · built after hours · powered by ☕</p>
   </div>
 
-  <div class="wrap">
-    <nav>
-      <a class="logo" href="#">off<span>duty</span>code</a>
-      <div class="nav-right">
-        <div class="status"><i class="dot" id="statusDot"></i><span id="statusText">checking shift…</span></div>
-        <div class="user"><span id="userName">guest</span><span class="role" id="userRole">guest</span><button class="logout" id="logoutBtn">log out</button></div>
-      </div>
-    </nav>
-
-    <header class="hero">
-      <p class="kicker">// clocked out. still shipping.</p>
-      <h1>Code written<br><span class="grad">after hours.</span></h1>
-      <p class="typed" aria-live="polite"><span id="typed"></span><span class="cursor"></span></p>
-      <div class="cta">
-        <a class="btn primary" href="#terminal">&gt; open terminal</a>
-        <a class="btn" href="#about">what is this?</a>
+  <!-- ============ App ============ -->
+  <div id="app" hidden>
+    <header class="topbar">
+      <div class="wrap">
+        <a class="logo" href="#/">off<span>duty</span>code</a>
+        <div class="who"><span class="name" id="userName"></span><span class="role" id="userRole"></span></div>
+        <button class="icon-btn" id="settingsBtn" title="GitHub settings" aria-label="GitHub settings" hidden>⚙️</button>
+        <button class="btn small ghost" id="logoutBtn">Log out</button>
       </div>
     </header>
-
-    <section id="about" class="reveal">
-      <h2>What happens here</h2>
-      <p class="sub">The day job pays the bills. The nights are for building whatever seems fun.</p>
-      <div class="grid">
-        <article class="card">
-          <div class="icon">🛠️</div>
-          <h3>Side projects</h3>
-          <p>Small tools and apps that start as "wouldn't it be cool if…" and sometimes get finished.</p>
-        </article>
-        <article class="card">
-          <div class="icon">🧪</div>
-          <h3>Experiments</h3>
-          <p>New languages, odd frameworks and ideas tried out with nobody watching and no deadlines.</p>
-        </article>
-        <article class="card">
-          <div class="icon">📓</div>
-          <h3>Notes &amp; write-ups</h3>
-          <p>What worked, what broke and what was learned along the way. Shared in case it helps someone.</p>
-        </article>
-      </div>
-    </section>
-
-    <section id="projects" class="reveal">
-      <h2>Small projects</h2>
-      <p class="sub">Little things built after hours. Some finished, some still cooking.</p>
-      <ul class="plist" id="projectList"></ul>
-    </section>
-
-    <section id="admin" class="admin-section" hidden>
-      <h2>Admin panel <span class="role admin">admin</span></h2>
-      <p class="sub">Only visible to admins. Changes are saved in this browser.</p>
-      <div class="stats">
-        <div class="stat"><b id="statProjects">0</b><span>projects listed</span></div>
-        <div class="stat"><b id="statDone">0</b><span>shipped</span></div>
-        <div class="stat"><b id="statSince">--:--</b><span>logged in at</span></div>
-      </div>
-      <form class="add-form" id="addForm" autocomplete="off">
-        <label class="field"><span>project name</span><input id="pName" maxlength="40" required></label>
-        <label class="field"><span>short description</span><input id="pDesc" maxlength="90"></label>
-        <label class="field"><span>status</span>
-          <select id="pStatus"><option value="building">building</option><option value="shipped">shipped</option><option value="idea">idea</option></select>
-        </label>
-        <button class="btn primary" type="submit">+ add</button>
-      </form>
-      <button class="btn" id="resetProjects" type="button">reset to default list</button>
-    </section>
-
-    <section class="reveal">
-      <h2>Shift tracker</h2>
-      <p class="sub">Based on your local time. Weekdays 9 to 6 are "on duty". Everything else is ours.</p>
-      <div class="clock">
-        <div>
-          <div class="time" id="clock">--:--:--</div>
-          <div class="shift" id="shift">…</div>
-        </div>
-        <div>
-          <div class="shift" id="barLabel">…</div>
-          <div class="bar"><i id="bar"></i></div>
-        </div>
-      </div>
-    </section>
-
-    <section id="terminal" class="reveal">
-      <h2>Try the terminal</h2>
-      <p class="sub">Type <code>help</code> and press Enter. Or tap a command below.</p>
-      <div class="term">
-        <div class="term-bar"><span></span><span></span><span></span><em id="termTitle">guest@offdutycode: ~</em></div>
-        <div class="term-body" id="termBody">
-          <div id="termOut"></div>
-          <div class="prompt-row">
-            <span class="prompt" id="termPrompt">guest@offduty:~$</span>
-            <input id="termIn" autocomplete="off" spellcheck="false" aria-label="Terminal input">
+    <main class="wrap">
+      <section class="intro">
+        <h1 id="greeting">Hello</h1>
+        <p id="introText"></p>
+        <div id="adminBits" hidden>
+          <div class="stats">
+            <div class="stat"><b id="statAll">0</b><span>pages</span></div>
+            <div class="stat"><b id="statPublic">0</b><span>shown to guests</span></div>
+            <div class="stat"><b id="statHidden">0</b><span>admin only</span></div>
           </div>
+          <button class="sync" id="syncBtn" type="button"><i class="dot"></i><span id="syncText"></span><em id="syncAction"></em></button>
+        </div>
+      </section>
+      <div class="toolbar">
+        <label class="search"><input class="input" id="search" type="search" placeholder="Search pages" aria-label="Search pages"></label>
+        <div class="seg" id="filter" hidden>
+          <button data-f="all" aria-pressed="true">All</button>
+          <button data-f="public" aria-pressed="false">Shown</button>
+          <button data-f="hidden" aria-pressed="false">Hidden</button>
         </div>
       </div>
-      <div class="chips" id="chips"></div>
-    </section>
-
-    <footer>
-      <p>&copy; <span id="year"></span> offdutycode.com &middot; built after hours &middot; powered by ☕</p>
-    </footer>
+      <div class="cards" id="cards"></div>
+    </main>
   </div>
 
+  <!-- ============ Page viewer ============ -->
+  <div id="viewer" hidden>
+    <div class="viewer-bar">
+      <a class="btn small" href="#/">← Back</a>
+      <strong id="viewerTitle"></strong>
+      <a class="btn small" id="viewerOpen" target="_blank" rel="noopener">Open ↗</a>
+    </div>
+    <iframe id="frame" title="Page preview" allow="fullscreen; clipboard-write"></iframe>
+  </div>
+
+  <!-- ============ GitHub settings ============ -->
+  <dialog id="settings">
+    <h2>Save changes to GitHub</h2>
+    <p id="settingsReason">Guest visibility is stored in <code>pages/settings.json</code> in your repo, so every visitor sees the same thing. To let this page update that file, connect a GitHub key once on this device.</p>
+    <div id="ghConnected" class="connected" hidden>✅ Connected. Ticking a checkbox saves straight to GitHub.</div>
+    <div id="ghForm">
+      <ol>
+        <li>Open <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">GitHub → new fine-grained token</a>.</li>
+        <li>Repository access: <b>Only select repositories → offdutycode</b>.</li>
+        <li>Permissions → Repository → <b>Contents: Read and write</b>.</li>
+        <li>Generate, copy and paste it here.</li>
+      </ol>
+      <label class="field"><span>GitHub token</span><input class="input" id="ghToken" type="password" autocomplete="off" spellcheck="false" placeholder="github_pat_…"></label>
+      <p class="error" id="ghError" aria-live="polite"></p>
+    </div>
+    <div class="row">
+      <button class="btn" id="ghClose" type="button">Close</button>
+      <button class="btn green" id="ghSave" type="button">Connect</button>
+      <button class="btn" id="ghDisconnect" type="button" hidden>Disconnect</button>
+    </div>
+    <p class="note">The key is kept only in this browser. Anyone using this device could use it, so only connect on your own phone or computer.</p>
+  </dialog>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+
   <script>
-    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    /* ---------- Config ---------- */
+    const CONFIG = { owner: "arpitsalecha-2912", repo: "offdutycode", branch: "main", dir: "pages" };
+    // sha256("username:password"). Front-end only: it keeps casual visitors out, but it is not real security.
+    const ADMIN_HASH = "040e1e1cc33501d5359a4954bf41c338903891cd2d3b6c9f5c31f61efc36efc8";
 
-    /* ---------- Starfield ---------- */
-    (() => {
-      const c = document.getElementById("sky");
-      const ctx = c.getContext("2d");
-      let w, h, stars = [], shooting = null;
-      function resize() {
-        w = c.width = innerWidth * devicePixelRatio;
-        h = c.height = innerHeight * devicePixelRatio;
-        c.style.width = innerWidth + "px";
-        c.style.height = innerHeight + "px";
-        const count = Math.min(260, Math.floor((innerWidth * innerHeight) / 5000));
-        stars = Array.from({ length: count }, () => ({
-          x: Math.random() * w, y: Math.random() * h,
-          r: (Math.random() * 1.2 + 0.2) * devicePixelRatio,
-          s: Math.random() * 0.15 + 0.02,
-          t: Math.random() * Math.PI * 2
-        }));
-      }
-      function frame() {
-        ctx.clearRect(0, 0, w, h);
-        for (const st of stars) {
-          st.t += 0.02;
-          st.y -= st.s * devicePixelRatio;
-          if (st.y < 0) { st.y = h; st.x = Math.random() * w; }
-          ctx.globalAlpha = 0.4 + Math.sin(st.t) * 0.35;
-          ctx.fillStyle = "#cfd6ff";
-          ctx.beginPath(); ctx.arc(st.x, st.y, st.r, 0, Math.PI * 2); ctx.fill();
-        }
-        if (!shooting && Math.random() < 0.004) {
-          shooting = { x: Math.random() * w * 0.7, y: Math.random() * h * 0.4, l: 0 };
-        }
-        if (shooting) {
-          shooting.l += 18 * devicePixelRatio;
-          const len = 120 * devicePixelRatio;
-          const x = shooting.x + shooting.l, y = shooting.y + shooting.l * 0.45;
-          const g = ctx.createLinearGradient(x - len, y - len * 0.45, x, y);
-          g.addColorStop(0, "rgba(255,255,255,0)"); g.addColorStop(1, "rgba(255,255,255,0.9)");
-          ctx.globalAlpha = 1; ctx.strokeStyle = g; ctx.lineWidth = 1.5 * devicePixelRatio;
-          ctx.beginPath(); ctx.moveTo(x - len, y - len * 0.45); ctx.lineTo(x, y); ctx.stroke();
-          if (x > w || y > h) shooting = null;
-        }
-        if (!reduceMotion) requestAnimationFrame(frame);
-      }
-      addEventListener("resize", () => { resize(); if (reduceMotion) frame(); });
-      resize(); frame();
-    })();
-
-    /* ---------- Typing taglines ---------- */
-    (() => {
-      const el = document.getElementById("typed");
-      const lines = [
-        "side projects, built at 2am.",
-        "experiments nobody asked for.",
-        "bugs fixed in pajamas.",
-        "ideas that refused to wait for Monday.",
-        "git commit -m \"one more thing\""
-      ];
-      if (reduceMotion) { el.textContent = lines[0]; return; }
-      let i = 0, j = 0, deleting = false;
-      (function tick() {
-        const full = lines[i];
-        j += deleting ? -1 : 1;
-        el.textContent = full.slice(0, j);
-        let wait = deleting ? 30 : 60;
-        if (!deleting && j === full.length) { wait = 1800; deleting = true; }
-        else if (deleting && j === 0) { deleting = false; i = (i + 1) % lines.length; wait = 400; }
-        setTimeout(tick, wait);
-      })();
-    })();
-
-    /* ---------- Shift clock ---------- */
-    function shiftInfo(d = new Date()) {
-      const day = d.getDay(), hr = d.getHours() + d.getMinutes() / 60;
-      const weekday = day >= 1 && day <= 5;
-      const onDuty = weekday && hr >= 9 && hr < 18;
-      return { onDuty, weekday, hr };
-    }
-    function updateClock() {
-      const d = new Date();
-      const { onDuty, weekday, hr } = shiftInfo(d);
-      document.getElementById("clock").textContent = d.toLocaleTimeString([], { hour12: false });
-      const dot = document.getElementById("statusDot");
-      const st = document.getElementById("statusText");
-      const shift = document.getElementById("shift");
-      const label = document.getElementById("barLabel");
-      const bar = document.getElementById("bar");
-      if (onDuty) {
-        dot.classList.add("busy");
-        st.textContent = "on duty — back at 18:00";
-        shift.innerHTML = "Status: <strong style='color:var(--warn)'>on duty</strong>. Day job in progress.";
-        const pct = ((hr - 9) / 9) * 100;
-        label.textContent = `Workday ${pct.toFixed(0)}% done. Off-duty starts at 18:00.`;
-        bar.style.width = pct + "%";
-      } else {
-        dot.classList.remove("busy");
-        st.textContent = "off duty — building";
-        shift.innerHTML = weekday
-          ? "Status: <strong>off duty</strong>. Editor open, coffee brewing."
-          : "Status: <strong>off duty</strong>. It's the weekend. Ship something.";
-        // Off-duty energy: peaks near midnight
-        const fromSix = ((hr - 18 + 24) % 24);
-        const energy = Math.max(10, 100 - Math.abs(fromSix - 6) * 9);
-        label.textContent = `Late-night focus level: ${energy.toFixed(0)}%`;
-        bar.style.width = energy + "%";
-      }
-    }
-    updateClock(); setInterval(updateClock, 1000);
-    document.getElementById("year").textContent = new Date().getFullYear();
-
-    /* ---------- Reveal on scroll ---------- */
-    const io = new IntersectionObserver(es => es.forEach(e => {
-      if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
-    }), { threshold: 0.15 });
-    document.querySelectorAll(".reveal").forEach(el => io.observe(el));
-
-    /* ---------- Storage helpers (storage can be blocked, so never crash) ---------- */
+    const $ = s => document.querySelector(s);
     const store = {
-      get(area, key) { try { return JSON.parse(window[area].getItem(key)); } catch { return null; } },
-      set(area, key, val) { try { window[area].setItem(key, JSON.stringify(val)); } catch {} },
-      del(area, key) { try { window[area].removeItem(key); } catch {} }
+      get(area, k) { try { return JSON.parse(window[area].getItem(k)); } catch { return null; } },
+      set(area, k, v) { try { window[area].setItem(k, JSON.stringify(v)); } catch {} },
+      del(area, k) { try { window[area].removeItem(k); } catch {} }
     };
+    const state = { session: null, settings: { pages: {} }, sha: null, pages: [], loaded: false, filter: "all", query: "" };
+    const isAdmin = () => state.session && state.session.role === "admin";
+    const isPublic = slug => !!(state.settings.pages[slug] && state.settings.pages[slug].guest === true);
+    const validSlug = s => /^[A-Za-z0-9][\w-]*$/.test(s);
+    const pageUrl = slug => `${CONFIG.dir}/${encodeURIComponent(slug)}/`;
 
-    /* ---------- Login (guest / admin) ---------- */
-    // Front-end only: this keeps casual visitors out of the admin view,
-    // but it is not real security. Anyone can read this page's source.
-    const ADMIN_HASH = "040e1e1cc33501d5359a4954bf41c338903891cd2d3b6c9f5c31f61efc36efc8"; // sha256("user:pass")
-    let session = null;
-    const onLogin = [];
-
+    /* ---------- Small helpers ---------- */
+    let toastTimer;
+    function toast(msg, type = "") {
+      const t = $("#toast");
+      t.textContent = msg; t.className = "show " + type;
+      clearTimeout(toastTimer); toastTimer = setTimeout(() => t.className = type, 3600);
+    }
+    function hue(str) { let h = 0; for (const c of str) h = (h * 31 + c.charCodeAt(0)) % 360; return h; }
+    function pretty(slug) { return slug.replace(/[-_]+/g, " ").replace(/\b\w/g, c => c.toUpperCase()); }
     async function sha256(text) {
       const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
       return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, "0")).join("");
     }
+    const b64encode = str => { let bin = ""; new TextEncoder().encode(str).forEach(b => bin += String.fromCharCode(b)); return btoa(bin); };
+    const b64decode = b64 => new TextDecoder().decode(Uint8Array.from(atob(b64.replace(/\s/g, "")), c => c.charCodeAt(0)));
+    function tickClock() { $("#clock").textContent = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }); }
+    tickClock(); setInterval(tickClock, 15000);
 
-    function applySession() {
-      const isAdmin = session && session.role === "admin";
-      document.body.classList.toggle("locked", !session);
-      document.getElementById("admin").hidden = !isAdmin;
-      if (!session) return;
-      document.getElementById("userName").textContent = session.name;
-      const roleEl = document.getElementById("userRole");
-      roleEl.textContent = session.role;
-      roleEl.classList.toggle("admin", isAdmin);
-      onLogin.forEach(fn => fn(session));
+    /* ---------- GitHub ---------- */
+    const token = () => store.get("localStorage", "odc.ghToken");
+    async function gh(path, opts = {}, useToken = true) {
+      const headers = { Accept: "application/vnd.github+json", ...(opts.headers || {}) };
+      const t = useToken && token();
+      if (t) headers.Authorization = `Bearer ${t}`;
+      const r = await fetch(`https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}${path}`, { ...opts, headers, cache: "no-store" });
+      if (!r.ok) { const e = new Error(`GitHub said ${r.status}`); e.status = r.status; throw e; }
+      return r.status === 204 ? null : r.json();
     }
+    const normalize = s => ({ pages: (s && typeof s.pages === "object" && s.pages) || {} });
 
-    function login(role, name) {
-      session = { role, name, since: Date.now() };
-      store.set("sessionStorage", "odc.session", session);
-      applySession();
-      scrollTo(0, 0);
-    }
-
-    function logout() {
-      session = null;
-      store.del("sessionStorage", "odc.session");
-      document.getElementById("adminPass").value = "";
-      applySession();
-    }
-
-    (() => {
-      const tabs = document.querySelectorAll(".tab");
-      const guestForm = document.getElementById("guestForm");
-      const adminForm = document.getElementById("adminForm");
-      const err = document.getElementById("loginError");
-      const box = document.getElementById("loginBox");
-
-      tabs.forEach(t => t.addEventListener("click", () => {
-        tabs.forEach(x => x.setAttribute("aria-selected", x === t));
-        const admin = t.dataset.role === "admin";
-        guestForm.hidden = admin; adminForm.hidden = !admin;
-        err.textContent = "";
-      }));
-
-      guestForm.addEventListener("submit", e => {
-        e.preventDefault();
-        const raw = document.getElementById("guestName").value.trim();
-        const name = raw.replace(/[^\w.-]/g, "").toLowerCase() || "guest";
-        login("guest", name);
-      });
-
-      adminForm.addEventListener("submit", async e => {
-        e.preventDefault();
-        const user = document.getElementById("adminUser").value.trim().toLowerCase();
-        const pass = document.getElementById("adminPass").value;
+    async function loadSettings() {
+      if (token()) {
         try {
-          if (await sha256(`${user}:${pass}`) === ADMIN_HASH) { err.textContent = ""; login("admin", user); return; }
-          err.textContent = "access denied. wrong username or password.";
-        } catch {
-          err.textContent = "login needs a secure (https) page.";
-        }
-        box.classList.remove("shake"); void box.offsetWidth; box.classList.add("shake");
-      });
-
-      document.getElementById("logoutBtn").addEventListener("click", logout);
-    })();
-
-    /* ---------- Projects + admin panel ---------- */
-    (() => {
-      const DEFAULTS = [
-        { name: "offdutycode.com", desc: "This site. Starfield, shift clock and a tiny terminal.", status: "shipped" },
-        { name: "secret-project-1", desc: "Loading… details when it works.", status: "building" },
-        { name: "ideas.txt", desc: "47 ideas, 0 regrets. Waiting for a free weekend.", status: "idea" }
-      ];
-      let projects = store.get("localStorage", "odc.projects") || DEFAULTS.slice();
-      const list = document.getElementById("projectList");
-      const save = () => store.set("localStorage", "odc.projects", projects);
-
-      function render() {
-        const isAdmin = session && session.role === "admin";
-        list.innerHTML = "";
-        projects.forEach((p, i) => {
-          const li = document.createElement("li");
-          const text = document.createElement("div"); text.className = "ptext";
-          const n = document.createElement("div"); n.className = "pname"; n.textContent = p.name;
-          const d = document.createElement("div"); d.className = "pdesc"; d.textContent = p.desc || "";
-          text.append(n, d);
-          const tag = document.createElement("span");
-          tag.className = "tag" + (p.status === "shipped" ? " done" : ""); tag.textContent = p.status;
-          li.append(text, tag);
-          if (isAdmin) {
-            const del = document.createElement("button");
-            del.className = "del"; del.textContent = "remove"; del.setAttribute("aria-label", `Remove ${p.name}`);
-            del.onclick = () => { projects.splice(i, 1); save(); render(); };
-            li.append(del);
-          }
-          list.append(li);
-        });
-        document.getElementById("statProjects").textContent = projects.length;
-        document.getElementById("statDone").textContent = projects.filter(p => p.status === "shipped").length;
-        if (session) document.getElementById("statSince").textContent =
-          new Date(session.since).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false });
+          const f = await gh(`/contents/${CONFIG.dir}/settings.json?ref=${CONFIG.branch}`);
+          state.sha = f.sha;
+          return normalize(JSON.parse(b64decode(f.content)));
+        } catch (e) { if (e.status === 404) { state.sha = null; return { pages: {} }; } }
       }
+      try {
+        const r = await fetch(`${CONFIG.dir}/settings.json?t=${Date.now()}`, { cache: "no-store" });
+        if (r.ok) return normalize(await r.json());
+      } catch {}
+      return { pages: {} };
+    }
 
-      document.getElementById("addForm").addEventListener("submit", e => {
-        e.preventDefault();
-        const name = document.getElementById("pName").value.trim();
-        if (!name) return;
-        projects.push({ name, desc: document.getElementById("pDesc").value.trim(), status: document.getElementById("pStatus").value });
-        save(); render(); e.target.reset();
-      });
-      document.getElementById("resetProjects").addEventListener("click", () => {
-        projects = DEFAULTS.slice(); store.del("localStorage", "odc.projects"); render();
-      });
-
-      window.getProjects = () => projects;
-      onLogin.push(render);
-      render();
-    })();
-
-    /* ---------- Terminal ---------- */
-    (() => {
-      const out = document.getElementById("termOut");
-      const input = document.getElementById("termIn");
-      const body = document.getElementById("termBody");
-      const history = []; let hIdx = 0;
-      const coffees = { n: 0 };
-      const quotes = [
-        "It works on my machine. — everyone, at some point",
-        "First, solve the problem. Then, write the code. — John Johnson",
-        "Simplicity is prerequisite for reliability. — Edsger Dijkstra",
-        "Talk is cheap. Show me the code. — Linus Torvalds",
-        "Make it work, make it right, make it fast. — Kent Beck"
-      ];
-
-      const who = () => (session ? session.name : "guest");
-      onLogin.push(s => {
-        document.getElementById("termPrompt").textContent = `${s.name}@offduty:~$`;
-        document.getElementById("termTitle").textContent = `${s.name}@offdutycode: ~`;
-      });
-
-      function print(text, cls = "") {
-        const div = document.createElement("div");
-        div.className = "line " + cls;
-        div.textContent = text;
-        out.appendChild(div);
-        body.scrollTop = body.scrollHeight;
+    // Admins see every folder inside pages/ (folders starting with _ or . are skipped).
+    async function listFolders() {
+      try {
+        const items = await gh(`/contents/${CONFIG.dir}?ref=${CONFIG.branch}`);
+        return items.filter(i => i.type === "dir" && !/^[_.]/.test(i.name)).map(i => i.name);
+      } catch {
+        return Object.keys(state.settings.pages); // offline or rate limited: fall back to known pages
       }
+    }
 
-      const cmds = {
-        help: () => [
-          ["Available commands:", "hl"],
-          ["  about      what is offdutycode"],
-          ["  status     am I on duty right now?"],
-          ["  ls         list what's in here"],
-          ["  projects   see what's being built"],
-          ["  coffee     refuel"],
-          ["  quote      random dev wisdom"],
-          ["  joke       a programmer joke"],
-          ["  date       current date and time"],
-          ["  echo TEXT  repeat after me"],
-          ["  whoami     who am I logged in as"],
-          ["  logout     clock out"],
-          ["  clear      clean the screen"]
-        ],
-        about: () => [
-          ["offdutycode = code written after the day job ends."],
-          ["Side projects, experiments and notes. No deadlines, no standups.", "muted"]
-        ],
-        whoami: () => session && session.role === "admin"
-          ? [[`${session.name} (admin). full access granted.`, "hl"]]
-          : [[`${who()} (guest). welcome, make yourself at home.`, "ok"]],
-        logout: () => { setTimeout(logout, 400); return [["clocking out… 👋", "muted"]]; },
-        status: () => {
-          const { onDuty } = shiftInfo();
-          return onDuty
-            ? [["● on duty. day job running. check back after 18:00.", "warn"]]
-            : [["● off duty. editor open. building things.", "ok"]];
-        },
-        ls: () => [["projects/  notes/  experiments/  ideas.txt  coffee.log", "hl"]],
-        projects: () => window.getProjects().map(p => {
-          const bar = { shipped: "■■■■■■■■■■", building: "■■■■□□□□□□", idea: "■□□□□□□□□□" }[p.status] || "□□□□□□□□□□";
-          return [`[${bar}] ${p.name.padEnd(18)} ${p.desc ? "— " + p.desc : ""}`, p.status === "shipped" ? "ok" : "muted"];
-        }),
-        "cat": (args) => {
-          if (args[0] === "ideas.txt") return [["1. build the thing\n2. ship the thing\n3. repeat", "muted"]];
-          if (args[0] === "coffee.log") return [[`cups today: ${coffees.n}`, "muted"]];
-          return [[`cat: ${args[0] || ""}: no such file`, "warn"]];
-        },
-        coffee: () => {
-          coffees.n++;
-          const msg = coffees.n >= 5 ? "  ...maybe try water next? 💧" : "";
-          return [[`☕ cup #${coffees.n} brewed. productivity +${10 + Math.floor(Math.random() * 20)}%${msg}`, "ok"]];
-        },
-        quote: () => [[quotes[Math.floor(Math.random() * quotes.length)], "hl"]],
-        joke: () => {
-          const jokes = [
-            "Why do programmers prefer dark mode? Because light attracts bugs.",
-            "There are 10 kinds of people: those who understand binary and those who don't.",
-            "A SQL query walks into a bar, walks up to two tables and asks: 'Can I join you?'",
-            "I'd tell you a UDP joke, but you might not get it."
-          ];
-          return [[jokes[Math.floor(Math.random() * jokes.length)]]];
-        },
-        date: () => [[new Date().toString(), "muted"]],
-        echo: (args) => [[args.join(" ")]],
-        sudo: () => session && session.role === "admin"
-          ? [["you're already admin. with great power… 🦸", "hl"]]
-          : [["nice try. permission denied. 😄", "warn"]],
-        exit: () => [["you can't clock out of off-duty. 🌙", "hl"]],
-        clear: () => { out.innerHTML = ""; return []; }
+    async function loadInfo(slug) {
+      let info = {};
+      try {
+        const r = await fetch(`${pageUrl(slug)}info.json?t=${Date.now()}`, { cache: "no-store" });
+        if (r.ok) info = await r.json();
+      } catch {}
+      return {
+        slug,
+        name: String(info.name || pretty(slug)).slice(0, 60),
+        description: String(info.description || "No description yet. Add one in info.json.").slice(0, 220),
+        icon: String(info.icon || "✨").slice(0, 4)
       };
+    }
 
-      function run(raw) {
-        const line = raw.trim();
-        print(`${who()}@offduty:~$ ${line}`, "muted");
-        if (!line) return;
-        history.push(line); hIdx = history.length;
-        const [name, ...args] = line.split(/\s+/);
-        const fn = cmds[name.toLowerCase()];
-        if (!fn) { print(`command not found: ${name}. type 'help'.`, "warn"); return; }
-        for (const [text, cls] of fn(args)) print(text, cls);
-      }
-
-      input.addEventListener("keydown", e => {
-        if (e.key === "Enter") { run(input.value); input.value = ""; }
-        else if (e.key === "ArrowUp" && hIdx > 0) { input.value = history[--hIdx]; e.preventDefault(); }
-        else if (e.key === "ArrowDown") {
-          hIdx = Math.min(history.length, hIdx + 1);
-          input.value = history[hIdx] || "";
-          e.preventDefault();
+    let saveChain = Promise.resolve();
+    async function putSettings(message, retry = true) {
+      const pages = {};
+      Object.keys(state.settings.pages).sort().forEach(k => pages[k] = { guest: isPublic(k) });
+      const body = { message, branch: CONFIG.branch, content: b64encode(JSON.stringify({ pages }, null, 2) + "\n") };
+      if (state.sha) body.sha = state.sha;
+      try {
+        const r = await gh(`/contents/${CONFIG.dir}/settings.json`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+        state.sha = r.content.sha;
+      } catch (e) {
+        if (retry && (e.status === 409 || e.status === 422)) {
+          // File changed on GitHub since we loaded it: grab the latest version id and try once more.
+          const f = await gh(`/contents/${CONFIG.dir}/settings.json?ref=${CONFIG.branch}`).catch(() => null);
+          state.sha = f ? f.sha : null;
+          return putSettings(message, false);
         }
+        throw e;
+      }
+    }
+
+    function setGuest(slug, on, input) {
+      if (!token()) {
+        input.checked = !on;
+        openSettings("Connect GitHub first, so this choice is saved for every guest, not just on this device.");
+        return;
+      }
+      const prev = isPublic(slug);
+      state.settings.pages[slug] = { guest: on };
+      const label = input.closest(".switch");
+      label.classList.add("busy");
+      renderStats();
+      const name = (state.pages.find(p => p.slug === slug) || {}).name || slug;
+      saveChain = saveChain.then(() => putSettings(`${on ? "Show" : "Hide"} ${slug} ${on ? "to" : "from"} guests`))
+        .then(() => toast(on ? `✅ ${name} is now visible to guests (live in about a minute).` : `🔒 ${name} is now admin only.`))
+        .catch(e => {
+          state.settings.pages[slug] = { guest: prev };
+          toast(e.status === 401 || e.status === 403 ? "GitHub refused the save. Check your token in settings." : `Couldn't save: ${e.message}`, "error");
+        })
+        .finally(() => render());
+    }
+
+    /* ---------- Rendering ---------- */
+    function greeting() {
+      const h = new Date().getHours();
+      return h < 5 ? "Still up" : h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : h < 22 ? "Good evening" : "Late night";
+    }
+
+    function renderStats() {
+      const total = state.pages.length, pub = state.pages.filter(p => isPublic(p.slug)).length;
+      $("#statAll").textContent = total;
+      $("#statPublic").textContent = pub;
+      $("#statHidden").textContent = total - pub;
+      const on = !!token();
+      $("#syncBtn").classList.toggle("on", on);
+      $("#syncText").innerHTML = on ? "<b>GitHub connected.</b> Checkbox changes go live for guests." : "<b>GitHub not connected.</b> Connect to save checkbox changes.";
+      $("#syncAction").textContent = on ? "Manage" : "Connect →";
+    }
+
+    function card(p) {
+      const el = document.createElement("article");
+      el.className = "card";
+      el.style.setProperty("--h", hue(p.slug));
+      const pub = isPublic(p.slug);
+
+      const top = document.createElement("div"); top.className = "card-top";
+      const tile = document.createElement("div"); tile.className = "tile"; tile.textContent = p.icon;
+      top.append(tile);
+      if (isAdmin()) {
+        const badge = document.createElement("span");
+        badge.className = "badge" + (pub ? " public" : "");
+        badge.textContent = pub ? "● visible" : "admin only";
+        top.append(badge);
+      }
+      const h3 = document.createElement("h3"); h3.textContent = p.name;
+      const desc = document.createElement("p"); desc.textContent = p.description;
+      el.append(top, h3, desc);
+      if (isAdmin()) { const path = document.createElement("div"); path.className = "path"; path.textContent = `pages/${p.slug}/`; el.append(path); }
+
+      const foot = document.createElement("div"); foot.className = "card-foot";
+      if (isAdmin()) {
+        const sw = document.createElement("label"); sw.className = "switch";
+        const input = document.createElement("input"); input.type = "checkbox"; input.checked = pub;
+        input.setAttribute("aria-label", `Show ${p.name} to guests`);
+        input.addEventListener("change", () => setGuest(p.slug, input.checked, input));
+        const track = document.createElement("span"); track.className = "track";
+        const lbl = document.createElement("span"); lbl.className = "lbl"; lbl.textContent = "Show to guests";
+        sw.append(input, track, lbl);
+        foot.append(sw);
+      }
+      const open = document.createElement("a");
+      open.className = "btn small"; open.href = `#/view/${encodeURIComponent(p.slug)}`; open.textContent = "Open →";
+      foot.append(open);
+      el.append(foot);
+      return el;
+    }
+
+    function render() {
+      const box = $("#cards");
+      box.innerHTML = "";
+      if (!state.session) return;
+      $("#greeting").textContent = `${greeting()}, ${state.session.name} ${isAdmin() ? "🛠️" : "👋"}`;
+      $("#introText").textContent = isAdmin()
+        ? "Every small website in the pages folder. Flip the switch to show a page to guests."
+        : "Here's what's open to visitors right now. Tap a card to try it.";
+      $("#adminBits").hidden = !isAdmin();
+      $("#filter").hidden = !isAdmin();
+      $("#settingsBtn").hidden = !isAdmin();
+
+      if (!state.loaded) {
+        for (let i = 0; i < 3; i++) { const s = document.createElement("div"); s.className = "skeleton"; box.append(s); }
+        return;
+      }
+      if (isAdmin()) renderStats();
+
+      const q = state.query.toLowerCase();
+      const list = state.pages.filter(p => {
+        if (!isAdmin() && !isPublic(p.slug)) return false;
+        if (isAdmin() && state.filter === "public" && !isPublic(p.slug)) return false;
+        if (isAdmin() && state.filter === "hidden" && isPublic(p.slug)) return false;
+        return !q || (p.name + " " + p.description + " " + p.slug).toLowerCase().includes(q);
       });
-      body.addEventListener("click", () => input.focus({ preventScroll: true }));
 
-      const chips = document.getElementById("chips");
-      ["help", "status", "projects", "coffee", "joke", "quote"].forEach(c => {
-        const b = document.createElement("button");
-        b.className = "chip"; b.textContent = c;
-        b.onclick = () => { run(c); input.focus({ preventScroll: true }); };
-        chips.appendChild(b);
-      });
+      if (!list.length) {
+        const e = document.createElement("div"); e.className = "empty";
+        if (q || state.filter !== "all") e.innerHTML = "<b>🔍</b>No pages match.";
+        else if (isAdmin()) e.innerHTML = "<b>📂</b>No pages yet. Add a folder like <code>pages/my-idea/</code> with an <code>index.html</code> and <code>info.json</code>.";
+        else e.innerHTML = "<b>🌙</b>Nothing public yet. Check back soon.";
+        box.append(e);
+        return;
+      }
+      list.forEach(p => box.append(card(p)));
+    }
 
-      print("welcome to offdutycode v1.0 🌙", "ok");
-      print("type 'help' to see what you can do.", "muted");
-    })();
+    /* ---------- Data loading ---------- */
+    async function load() {
+      state.loaded = false; render();
+      state.settings = await loadSettings();
+      let slugs = isAdmin()
+        ? await listFolders()
+        : Object.keys(state.settings.pages).filter(isPublic);
+      slugs = [...new Set(slugs)].filter(validSlug);
+      state.pages = (await Promise.all(slugs.map(loadInfo))).sort((a, b) => a.name.localeCompare(b.name));
+      state.loaded = true;
+      render(); route();
+    }
 
-    /* ---------- Restore login for this tab ---------- */
-    session = store.get("sessionStorage", "odc.session");
-    applySession();
+    /* ---------- Routing ---------- */
+    function route() {
+      const m = location.hash.match(/^#\/view\/(.+)$/);
+      const viewer = $("#viewer"), frame = $("#frame");
+      if (!m || !state.session || !state.loaded) {
+        viewer.hidden = true; frame.removeAttribute("src"); document.title = "OffDutyCode";
+        return;
+      }
+      const slug = decodeURIComponent(m[1]);
+      const page = state.pages.find(p => p.slug === slug);
+      if (!page || (!isAdmin() && !isPublic(slug))) { toast("That page isn't available.", "error"); location.hash = "#/"; return; }
+      $("#viewerTitle").textContent = `${page.icon} ${page.name}`;
+      $("#viewerOpen").href = pageUrl(slug);
+      if (frame.getAttribute("src") !== pageUrl(slug)) frame.src = pageUrl(slug);
+      document.title = `${page.name} · OffDutyCode`;
+      viewer.hidden = false;
+    }
+    addEventListener("hashchange", route);
+
+    /* ---------- Login / logout ---------- */
+    function showApp() {
+      $("#login").hidden = !!state.session;
+      $("#app").hidden = !state.session;
+      if (!state.session) { $("#viewer").hidden = true; return; }
+      $("#userName").textContent = state.session.name;
+      $("#userRole").textContent = state.session.role;
+      $("#userRole").classList.toggle("admin", isAdmin());
+      load();
+    }
+    function login(role, name) {
+      state.session = { role, name };
+      store.set("sessionStorage", "odc.session", state.session);
+      if (!location.hash.startsWith("#/view/")) location.hash = "#/";
+      showApp(); scrollTo(0, 0);
+    }
+    function logout() {
+      state.session = null; state.pages = []; state.filter = "all"; state.query = "";
+      $("#search").value = ""; $("#adminPass").value = "";
+      store.del("sessionStorage", "odc.session");
+      history.replaceState(null, "", location.pathname);
+      showApp();
+    }
+
+    $("#guestForm").addEventListener("submit", e => {
+      e.preventDefault();
+      const name = $("#guestName").value.trim().replace(/[^\p{L}\p{N} ._-]/gu, "").slice(0, 24) || "guest";
+      login("guest", name);
+    });
+    $("#adminForm").addEventListener("submit", async e => {
+      e.preventDefault();
+      const user = $("#adminUser").value.trim().toLowerCase(), pass = $("#adminPass").value;
+      const err = $("#loginError"), door = $("#adminDoor");
+      try {
+        if (await sha256(`${user}:${pass}`) === ADMIN_HASH) { err.textContent = ""; login("admin", user); return; }
+        err.textContent = "Wrong username or password.";
+      } catch { err.textContent = "Login needs a secure (https) connection."; }
+      door.classList.remove("shake"); void door.offsetWidth; door.classList.add("shake");
+    });
+    $("#logoutBtn").addEventListener("click", logout);
+
+    /* ---------- Search + filter ---------- */
+    $("#search").addEventListener("input", e => { state.query = e.target.value; render(); });
+    $("#filter").addEventListener("click", e => {
+      const b = e.target.closest("button"); if (!b) return;
+      state.filter = b.dataset.f;
+      $("#filter").querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b));
+      render();
+    });
+
+    /* ---------- GitHub settings dialog ---------- */
+    function openSettings(reason) {
+      const on = !!token();
+      $("#settingsReason").textContent = reason ||
+        "Guest visibility is stored in pages/settings.json in your repo, so every visitor sees the same thing. To let this page update that file, connect a GitHub key once on this device.";
+      $("#ghConnected").hidden = !on; $("#ghForm").hidden = on;
+      $("#ghSave").hidden = on; $("#ghDisconnect").hidden = !on;
+      $("#ghError").textContent = ""; $("#ghToken").value = "";
+      $("#settings").showModal();
+    }
+    $("#settingsBtn").addEventListener("click", () => openSettings());
+    $("#syncBtn").addEventListener("click", () => openSettings());
+    $("#ghClose").addEventListener("click", () => $("#settings").close());
+    $("#ghSave").addEventListener("click", async () => {
+      const t = $("#ghToken").value.trim(), err = $("#ghError"), btn = $("#ghSave");
+      if (!t) { err.textContent = "Paste your token first."; return; }
+      btn.disabled = true; btn.textContent = "Checking…"; err.textContent = "";
+      try {
+        const r = await fetch(`https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}`, { headers: { Accept: "application/vnd.github+json", Authorization: `Bearer ${t}` }, cache: "no-store" });
+        if (r.status === 401) throw new Error("GitHub didn't accept that token.");
+        if (!r.ok) throw new Error(`GitHub said ${r.status}. Make sure the token includes the offdutycode repo.`);
+        const repo = await r.json();
+        if (repo.permissions && !repo.permissions.push) throw new Error("This token can't edit the repo. Give it Contents: Read and write.");
+        store.set("localStorage", "odc.ghToken", t);
+        $("#settings").close();
+        toast("✅ GitHub connected. Checkbox changes now save for everyone.");
+        load();
+      } catch (e) {
+        err.textContent = e.message || "Couldn't reach GitHub.";
+      } finally { btn.disabled = false; btn.textContent = "Connect"; }
+    });
+    $("#ghDisconnect").addEventListener("click", () => {
+      store.del("localStorage", "odc.ghToken");
+      $("#settings").close(); renderStats();
+      toast("GitHub disconnected on this device.");
+    });
+
+    /* ---------- Start ---------- */
+    state.session = store.get("sessionStorage", "odc.session");
+    showApp();
   </script>
 </body>
 </html>

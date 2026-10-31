@@ -1,0 +1,7 @@
+{
+  "pages": {
+    "after-hours": { "guest": true },
+    "pomodoro": { "guest": true },
+    "tip-splitter": { "guest": false }
+  }
+}

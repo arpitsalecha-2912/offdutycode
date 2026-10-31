@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tip Splitter</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root { --bg: #0a0b12; --card: rgba(255,255,255,0.04); --line: rgba(255,255,255,0.09); --fg: #eef0f7; --muted: #9097ab; --accent: #9d8cff; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh; padding: 32px 16px; color: var(--fg);
+      background: radial-gradient(circle at 80% 0%, #1d1840 0%, var(--bg) 55%);
+      font-family: "Space Grotesk", system-ui, sans-serif;
+    }
+    main { max-width: 420px; margin: 0 auto; }
+    h1 { font-size: 1.8rem; letter-spacing: -0.02em; }
+    p.sub { color: var(--muted); margin: 4px 0 24px; }
+    .card { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 20px; }
+    label { display: block; font-size: 0.85rem; color: var(--muted); margin-bottom: 6px; }
+    input[type=number] {
+      width: 100%; font: 600 1.4rem "JetBrains Mono", monospace; color: var(--fg); background: rgba(0,0,0,0.25);
+      border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; outline: 0; margin-bottom: 18px;
+    }
+    input:focus { border-color: var(--accent); }
+    .tips { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 18px; }
+    .tips button {
+      font: 600 0.95rem "Space Grotesk", sans-serif; padding: 12px 0; border-radius: 12px; cursor: pointer;
+      background: rgba(255,255,255,0.04); color: var(--fg); border: 1px solid var(--line);
+    }
+    .tips button.on { background: var(--accent); color: #120a33; border-color: var(--accent); }
+    .people { display: flex; align-items: center; justify-content: space-between; }
+    .stepper { display: flex; align-items: center; gap: 14px; font: 700 1.3rem "JetBrains Mono", monospace; }
+    .stepper button { width: 44px; height: 44px; border-radius: 12px; font-size: 1.3rem; cursor: pointer; background: rgba(255,255,255,0.06); color: var(--fg); border: 1px solid var(--line); }
+    .result { margin-top: 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .result div { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 16px; }
+    .result span { color: var(--muted); font-size: 0.82rem; }
+    .result b { display: block; font: 700 1.5rem "JetBrains Mono", monospace; margin-top: 4px; }
+    .result .big { grid-column: 1 / -1; border-color: rgba(157,140,255,0.4); }
+    .result .big b { font-size: 2.2rem; color: var(--accent); }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>🧾 Tip Splitter</h1>
+    <p class="sub">Who owes what, sorted.</p>
+    <div class="card">
+      <label for="bill">Bill amount</label>
+      <input id="bill" type="number" inputmode="decimal" min="0" step="0.01" value="1200">
+      <label>Tip</label>
+      <div class="tips" id="tips"></div>
+      <div class="people">
+        <label style="margin:0">People</label>
+        <div class="stepper"><button id="minus" aria-label="Fewer people">−</button><span id="n">3</span><button id="plus" aria-label="More people">+</button></div>
+      </div>
+    </div>
+    <div class="result">
+      <div class="big"><span>Each person pays</span><b id="each">0</b></div>
+      <div><span>Tip total</span><b id="tip">0</b></div>
+      <div><span>Grand total</span><b id="total">0</b></div>
+    </div>
+  </main>
+  <script>
+    let pct = 10, n = 3;
+    const fmt = v => v.toLocaleString(undefined, { maximumFractionDigits: 2, minimumFractionDigits: 2 });
+    const tips = document.getElementById("tips");
+    [0, 5, 10, 15].forEach(p => {
+      const b = document.createElement("button");
+      b.textContent = p + "%";
+      b.onclick = () => { pct = p; calc(); };
+      tips.appendChild(b);
+    });
+    function calc() {
+      const bill = Math.max(0, parseFloat(document.getElementById("bill").value) || 0);
+      const tip = bill * pct / 100;
+      document.getElementById("n").textContent = n;
+      document.getElementById("tip").textContent = fmt(tip);
+      document.getElementById("total").textContent = fmt(bill + tip);
+      document.getElementById("each").textContent = fmt((bill + tip) / n);
+      [...tips.children].forEach(b => b.classList.toggle("on", b.textContent === pct + "%"));
+    }
+    document.getElementById("bill").oninput = calc;
+    document.getElementById("minus").onclick = () => { n = Math.max(1, n - 1); calc(); };
+    document.getElementById("plus").onclick = () => { n = Math.min(50, n + 1); calc(); };
+    calc();
+  </script>
+</body>
+</html>

@@ -2,30 +2,55 @@
 
 > Clocked out. Still shipping.
 
-**[offdutycode.com](https://offdutycode.com)** is a home for small projects built after hours: little tools, quick experiments and weekend ideas that start as "wouldn't it be cool if…".
+**[offdutycode.com](https://offdutycode.com)** is a home for small websites built after hours: little tools, quick experiments and weekend ideas.
 
-The day job pays the bills. The nights are for building whatever seems fun.
+## How the site works
 
-## What you'll find here
+1. **Login screen.** Visitors choose **Guest** (no password) or **Admin** (username and password).
+2. **Admin dashboard.** Admins see a card for every page in the `pages/` folder. Each card has:
+   - an **Open** button to use the page
+   - a **Show to guests** switch that decides whether guests can see it
+3. **Guest gallery.** Guests only see the pages that are switched on.
 
-- 🛠️ **Small projects**: tiny tools and apps, each one focused on doing one thing well.
-- 🧪 **Experiments**: new languages, odd frameworks and ideas tried out with no deadlines.
-- 📓 **Notes & write-ups**: what worked, what broke and what was learned along the way.
+## Add a new page
 
-## The website
+1. Copy the `pages/_template/` folder and rename it, for example `pages/weather-app/`.
+   Use lowercase letters, numbers and dashes. Folders starting with `_` are ignored.
+2. Put your page in `index.html` inside that folder (plus any images, CSS or JS it needs).
+3. Edit `info.json` in the same folder:
 
-The site is a single static page (`index.html`) with no build step and no dependencies. It includes:
+   ```json
+   {
+     "name": "Weather App",
+     "description": "One or two sentences about what this page does.",
+     "icon": "🌦️"
+   }
+   ```
 
-- A login screen: enter as a **guest** (no password) or as an **admin**
-- An admin panel for adding and removing projects (saved in the admin's browser)
-- An animated starfield background
-- A typing hero headline
-- A shift tracker that shows whether you're "on duty" (weekdays 9 to 6, your local time)
-- An interactive terminal you can type commands into (try `help`)
+4. Commit to `main`. The page shows up on the admin dashboard automatically, hidden from guests.
+5. On the dashboard, flip **Show to guests** to make it public.
+
+## Guest visibility
+
+Which pages guests can see is stored in `pages/settings.json`:
+
+```json
+{
+  "pages": {
+    "pomodoro": { "guest": true },
+    "tip-splitter": { "guest": false }
+  }
+}
+```
+
+The dashboard switch updates this file for you. The first time, it asks for a GitHub key (a fine-grained token with **Contents: Read and write** on this repo only). The key is saved only in that browser. You can also edit `settings.json` by hand on GitHub.
+
+## Good to know
+
+- The admin password check runs in the browser, so it keeps casual visitors out but isn't real security.
+- "Hidden" pages are hidden from the guest gallery, but anyone who knows the exact link can still open them. Don't put private information in this repo.
 
 ## Run it locally
-
-Open `index.html` in a browser, or serve the folder:
 
 ```bash
 python3 -m http.server 8000
@@ -34,7 +59,7 @@ python3 -m http.server 8000
 
 ## Hosting
 
-The site is served at `offdutycode.com`, set by the `CNAME` file (for GitHub Pages).
+Served by GitHub Pages at `offdutycode.com` (set by the `CNAME` file).
 
 ---
 
