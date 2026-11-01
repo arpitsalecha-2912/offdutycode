@@ -83,7 +83,8 @@
 
     /* ---------- Login ---------- */
     #login { min-height: 100vh; display: flex; flex-direction: column; }
-    .login-top { display: flex; align-items: center; justify-content: space-between; padding: 22px 0; }
+    .login-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; padding: 22px 0; }
+    #clock { font-variant-numeric: tabular-nums; }
     .pill {
       display: inline-flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 0.75rem; color: var(--muted);
       border: 1px solid var(--line); background: var(--surface); padding: 6px 12px; border-radius: 999px;
@@ -382,8 +383,13 @@
     }
     const b64encode = str => { let bin = ""; new TextEncoder().encode(str).forEach(b => bin += String.fromCharCode(b)); return btoa(bin); };
     const b64decode = b64 => new TextDecoder().decode(Uint8Array.from(atob(b64.replace(/\s/g, "")), c => c.charCodeAt(0)));
-    function tickClock() { $("#clock").textContent = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }); }
-    tickClock(); setInterval(tickClock, 15000);
+    function tickClock() {
+      const d = new Date();
+      const date = d.toLocaleDateString([], { weekday: "short", day: "numeric", month: "short", year: "numeric" });
+      const time = d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+      $("#clock").textContent = `${date} · ${time}`;
+    }
+    tickClock(); setInterval(tickClock, 1000);
 
     /* ---------- GitHub ---------- */
     const token = () => store.get("localStorage", "odc.ghToken");
