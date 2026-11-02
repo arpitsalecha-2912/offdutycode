@@ -333,9 +333,10 @@
     <div id="ghForm">
       <ol>
         <li>Open <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">GitHub → new fine-grained token</a>.</li>
-        <li>Repository access: <b>Only select repositories → offdutycode</b>.</li>
-        <li>Permissions → Repository → <b>Contents: Read and write</b>.</li>
-        <li>Generate, copy and paste it here.</li>
+        <li>Repository access: tap <b>Only select repositories</b>, then pick <b>offdutycode</b>. (Permissions stay hidden until you do this.)</li>
+        <li>Under Permissions, tap <b>+ Add permissions → Repository</b> (or expand <b>Repository permissions</b>), find <b>Contents</b> and set it to <b>Read and write</b>.</li>
+        <li>Tap <b>Generate token</b>, copy the <code>github_pat_…</code> code and paste it here.</li>
+        <li>Can't see these options on your phone? Switch the browser to <b>desktop site</b>.</li>
       </ol>
       <label class="field"><span>GitHub token</span><input class="input" id="ghToken" type="password" autocomplete="off" spellcheck="false" placeholder="github_pat_…"></label>
       <p class="error" id="ghError" aria-live="polite"></p>
