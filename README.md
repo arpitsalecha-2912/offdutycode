@@ -37,8 +37,8 @@ Which pages guests can see is stored in `pages/settings.json`:
 ```json
 {
   "pages": {
-    "pomodoro": { "guest": true },
-    "tip-splitter": { "guest": false }
+    "focus-timer": { "guest": true },
+    "lunch-splitter": { "guest": false }
   }
 }
 ```

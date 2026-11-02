@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>OffDutyCode</title>
+  <title>After Hours</title>
   <meta name="description" content="OffDutyCode — side projects, experiments and ideas, built after hours.">
   <meta name="theme-color" content="#07090f">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌙</text></svg>">
@@ -157,7 +157,7 @@
     </nav>
 
     <header class="hero">
-      <p class="kicker">// clocked out. still shipping.</p>
+      <p class="kicker">// logged out of office. still shipping.</p>
       <h1>Code written<br><span class="grad">after hours.</span></h1>
       <p class="typed" aria-live="polite"><span id="typed"></span><span class="cursor"></span></p>
       <div class="cta">
@@ -168,29 +168,29 @@
 
     <section id="about" class="reveal">
       <h2>What happens here</h2>
-      <p class="sub">The day job pays the bills. The nights are for building whatever seems fun.</p>
+      <p class="sub">The office pays the bills. The evenings are for building whatever seems fun.</p>
       <div class="grid">
         <article class="card">
-          <div class="icon">🛠️</div>
-          <h3>Side projects</h3>
-          <p>Small tools and apps that start as "wouldn't it be cool if…" and sometimes get finished.</p>
+          <div class="icon">💼</div>
+          <h3>Office life</h3>
+          <p>9:30 to 6:30: standups, tickets, meetings and the occasional "quick call".</p>
         </article>
         <article class="card">
-          <div class="icon">🧪</div>
-          <h3>Experiments</h3>
-          <p>New languages, odd frameworks and ideas tried out with nobody watching and no deadlines.</p>
+          <div class="icon">🍱</div>
+          <h3>Team &amp; friends</h3>
+          <p>Lunch plans, chai runs and Friday treats with the people who make the office fun.</p>
         </article>
         <article class="card">
-          <div class="icon">📓</div>
-          <h3>Notes &amp; write-ups</h3>
-          <p>What worked, what broke and what was learned along the way. Shared in case it helps someone.</p>
+          <div class="icon">🌙</div>
+          <h3>After 6:30</h3>
+          <p>Laptop bag down, editor open. Small tools built for the office, and just for fun.</p>
         </article>
       </div>
     </section>
 
     <section class="reveal">
       <h2>Shift tracker</h2>
-      <p class="sub">Based on your local time. Weekdays 9 to 6 are "on duty". Everything else is ours.</p>
+      <p class="sub">Based on your local time. Weekdays 9:30 to 6:30 are office hours. Everything else is ours.</p>
       <div class="clock">
         <div>
           <div class="time" id="clock">--:--:--</div>
@@ -278,11 +278,11 @@
     (() => {
       const el = document.getElementById("typed");
       const lines = [
-        "side projects, built at 2am.",
-        "experiments nobody asked for.",
-        "bugs fixed in pajamas.",
+        "standup at 10. side projects at 10pm.",
+        "meetings that could have been emails.",
+        "chai breaks with the team.",
         "ideas that refused to wait for Monday.",
-        "git commit -m \"one more thing\""
+        "git commit -m \"after the 6:30 logout\""
       ];
       if (reduceMotion) { el.textContent = lines[0]; return; }
       let i = 0, j = 0, deleting = false;
@@ -301,7 +301,7 @@
     function shiftInfo(d = new Date()) {
       const day = d.getDay(), hr = d.getHours() + d.getMinutes() / 60;
       const weekday = day >= 1 && day <= 5;
-      const onDuty = weekday && hr >= 9 && hr < 18;
+      const onDuty = weekday && hr >= 9.5 && hr < 18.5; // office: 9:30 to 6:30
       return { onDuty, weekday, hr };
     }
     function updateClock() {
@@ -315,19 +315,19 @@
       const bar = document.getElementById("bar");
       if (onDuty) {
         dot.classList.add("busy");
-        st.textContent = "on duty — back at 18:00";
-        shift.innerHTML = "Status: <strong style='color:var(--warn)'>on duty</strong>. Day job in progress.";
-        const pct = ((hr - 9) / 9) * 100;
-        label.textContent = `Workday ${pct.toFixed(0)}% done. Off-duty starts at 18:00.`;
+        st.textContent = "in office — free at 6:30 pm";
+        shift.innerHTML = "Status: <strong style='color:var(--warn)'>in office</strong>. Tickets, meetings, repeat.";
+        const pct = ((hr - 9.5) / 9) * 100;
+        label.textContent = `Office day ${pct.toFixed(0)}% done. Logout at 6:30 pm.`;
         bar.style.width = pct + "%";
       } else {
         dot.classList.remove("busy");
         st.textContent = "off duty — building";
         shift.innerHTML = weekday
-          ? "Status: <strong>off duty</strong>. Editor open, coffee brewing."
+          ? "Status: <strong>off duty</strong>. Logged out, editor open, chai brewing."
           : "Status: <strong>off duty</strong>. It's the weekend. Ship something.";
         // Off-duty energy: peaks near midnight
-        const fromSix = ((hr - 18 + 24) % 24);
+        const fromSix = ((hr - 18.5 + 24) % 24);
         const energy = Math.max(10, 100 - Math.abs(fromSix - 6) * 9);
         label.textContent = `Late-night focus level: ${energy.toFixed(0)}%`;
         bar.style.width = energy + "%";
@@ -373,6 +373,11 @@
           ["  ls         list what's in here"],
           ["  projects   see what's being built"],
           ["  coffee     refuel"],
+          ["  chai       chai break with the team"],
+          ["  standup    today's standup update"],
+          ["  meeting    join the next meeting"],
+          ["  lunch      what's for lunch?"],
+          ["  logout     time left until 6:30 pm"],
           ["  quote      random dev wisdom"],
           ["  joke       a programmer joke"],
           ["  date       current date and time"],
@@ -380,15 +385,34 @@
           ["  clear      clean the screen"]
         ],
         about: () => [
-          ["offdutycode = code written after the day job ends."],
-          ["Side projects, experiments and notes. No deadlines, no standups.", "muted"]
+          ["offdutycode = code written after the office day ends."],
+          ["Office 9:30 to 6:30. After that: small tools, team fun and experiments.", "muted"]
         ],
+        chai: () => [["☕ chai break! 5 minutes, the whole team, the usual gossip.", "ok"]],
+        standup: () => {
+          const y = ["fixed the login bug", "reviewed 3 PRs", "sat in 4 meetings", "wrote tests (finally)"];
+          const t = ["ship the feature", "clear the ticket backlog", "survive the sprint review", "lunch with the team"];
+          const r = a => a[Math.floor(Math.random() * a.length)];
+          return [["Yesterday: " + r(y)], ["Today:     " + r(t)], ["Blockers:  waiting on that one approval 🙃", "warn"]];
+        },
+        meeting: () => [["📅 joining… you're on mute. no wait, you're not. 😅", "hl"], ["this meeting could have been an email.", "muted"]],
+        lunch: () => {
+          const l = ["biryani with the team 🍛", "office canteen thali 🍱", "pizza, someone's birthday 🍕", "dosa run 🥞", "leftovers at the desk 🥲"];
+          return [["today's lunch: " + l[Math.floor(Math.random() * l.length)], "ok"]];
+        },
+        logout: () => {
+          const d = new Date(), end = new Date(d); end.setHours(18, 30, 0, 0);
+          const { onDuty } = shiftInfo(d);
+          if (!onDuty) return [["you're already logged out. enjoy the evening 🌙", "ok"]];
+          const m = Math.round((end - d) / 60000);
+          return [[`⏳ ${Math.floor(m / 60)}h ${m % 60}m until 6:30 pm logout.`, "warn"]];
+        },
         whoami: () => [["guest. welcome, make yourself at home.", "ok"]],
         status: () => {
           const { onDuty } = shiftInfo();
           return onDuty
-            ? [["● on duty. day job running. check back after 18:00.", "warn"]]
-            : [["● off duty. editor open. building things.", "ok"]];
+            ? [["● in office. back after 6:30 pm.", "warn"]]
+            : [["● logged out of office. building things.", "ok"]];
         },
         ls: () => [["projects/  notes/  experiments/  ideas.txt  coffee.log", "hl"]],
         projects: () => [
@@ -412,7 +436,9 @@
             "Why do programmers prefer dark mode? Because light attracts bugs.",
             "There are 10 kinds of people: those who understand binary and those who don't.",
             "A SQL query walks into a bar, walks up to two tables and asks: 'Can I join you?'",
-            "I'd tell you a UDP joke, but you might not get it."
+            "I'd tell you a UDP joke, but you might not get it.",
+            "My manager said 'think outside the box'. So I worked from the cafeteria.",
+            "Status at 6:29 pm: 'just one small change'. Status at 9 pm: still changing."
           ];
           return [[jokes[Math.floor(Math.random() * jokes.length)]]];
         },
@@ -446,7 +472,7 @@
       body.addEventListener("click", () => input.focus({ preventScroll: true }));
 
       const chips = document.getElementById("chips");
-      ["help", "status", "projects", "coffee", "joke", "quote"].forEach(c => {
+      ["help", "status", "logout", "standup", "lunch", "chai", "joke"].forEach(c => {
         const b = document.createElement("button");
         b.className = "chip"; b.textContent = c;
         b.onclick = () => { run(c); input.focus({ preventScroll: true }); };

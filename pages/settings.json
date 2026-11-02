@@ -3,10 +3,13 @@
     "after-hours": {
       "guest": true
     },
-    "pomodoro": {
+    "focus-timer": {
       "guest": true
     },
-    "tip-splitter": {
+    "lunch-splitter": {
+      "guest": true
+    },
+    "office-clock": {
       "guest": true
     }
   }

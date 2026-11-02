@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Team Lunch Splitter</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root { --bg: #0a0b12; --card: rgba(255,255,255,0.04); --line: rgba(255,255,255,0.09); --fg: #eef0f7; --muted: #9097ab; --accent: #7cd992; --violet: #9d8cff; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh; padding: 28px 16px 40px; color: var(--fg);
+      background: radial-gradient(circle at 80% 0%, #12301e 0%, var(--bg) 55%);
+      font-family: "Space Grotesk", system-ui, sans-serif;
+    }
+    main { max-width: 440px; margin: 0 auto; }
+    h1 { font-size: 1.7rem; letter-spacing: -0.02em; }
+    p.sub { color: var(--muted); margin: 4px 0 20px; }
+    .card { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 18px; margin-bottom: 14px; }
+    .card h2 { font-size: 0.95rem; margin-bottom: 12px; }
+    label { display: block; font-size: 0.82rem; color: var(--muted); margin-bottom: 6px; }
+    .input, select {
+      width: 100%; font: 600 1rem "Space Grotesk", sans-serif; color: var(--fg); background: rgba(0,0,0,0.25);
+      border: 1px solid var(--line); border-radius: 12px; padding: 11px 12px; outline: 0; color-scheme: dark;
+    }
+    .input:focus { border-color: var(--accent); }
+    .amount-row { display: grid; grid-template-columns: 88px 1fr; gap: 8px; margin-bottom: 14px; }
+    #bill { font-family: "JetBrains Mono", monospace; font-size: 1.3rem; }
+    .what { margin-bottom: 14px; }
+    .tips { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+    .tips button, .chip-add {
+      font: 600 0.92rem "Space Grotesk", sans-serif; padding: 11px 0; border-radius: 12px; cursor: pointer;
+      background: rgba(255,255,255,0.04); color: var(--fg); border: 1px solid var(--line);
+    }
+    .tips button.on { background: var(--accent); color: #06210f; border-color: var(--accent); }
+    .add { display: grid; grid-template-columns: 1fr auto; gap: 8px; }
+    .chip-add { padding: 0 16px; }
+    .people { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .person { display: inline-flex; align-items: center; gap: 6px; padding: 6px 6px 6px 12px; border-radius: 99px; background: rgba(157,140,255,0.12); border: 1px solid rgba(157,140,255,0.3); font-size: 0.9rem; }
+    .person.payer { background: rgba(124,217,146,0.14); border-color: rgba(124,217,146,0.4); }
+    .person button { border: 0; background: rgba(255,255,255,0.08); color: var(--muted); width: 22px; height: 22px; border-radius: 50%; cursor: pointer; font-size: 0.8rem; }
+    .hint { color: var(--muted); font-size: 0.8rem; margin-top: 10px; }
+    .result { background: linear-gradient(160deg, rgba(124,217,146,0.12), rgba(157,140,255,0.08)); border: 1px solid rgba(124,217,146,0.35); border-radius: 20px; padding: 18px; }
+    .each span { color: var(--muted); font-size: 0.85rem; }
+    .each b { display: block; font: 700 2.3rem "JetBrains Mono", monospace; color: var(--accent); }
+    .mini { display: flex; gap: 18px; color: var(--muted); font-size: 0.85rem; margin: 6px 0 14px; }
+    .mini b { color: var(--fg); font-family: "JetBrains Mono", monospace; }
+    .owes { list-style: none; display: grid; gap: 6px; margin-bottom: 14px; }
+    .owes li { display: flex; justify-content: space-between; font-size: 0.92rem; padding: 8px 12px; border-radius: 10px; background: rgba(0,0,0,0.2); }
+    .owes li b { font-family: "JetBrains Mono", monospace; }
+    .share { width: 100%; font: 700 1rem "Space Grotesk", sans-serif; padding: 13px; border-radius: 14px; border: 0; background: var(--accent); color: #06210f; cursor: pointer; }
+    .toast { text-align: center; color: var(--accent); font-size: 0.85rem; min-height: 1.3em; margin-top: 8px; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>🍱 Team Lunch Splitter</h1>
+    <p class="sub">Office lunch, birthday cake or Friday treat. Sorted in seconds.</p>
+
+    <section class="card">
+      <div class="what">
+        <label for="what">What's it for?</label>
+        <input class="input" id="what" maxlength="40" placeholder="Team lunch" value="Team lunch">
+      </div>
+      <label for="bill">Bill amount</label>
+      <div class="amount-row">
+        <select id="cur" aria-label="Currency"><option>₹</option><option>$</option><option>€</option><option>£</option><option>AED</option></select>
+        <input class="input" id="bill" type="number" inputmode="decimal" min="0" step="0.01" value="1800">
+      </div>
+      <label>Tip</label>
+      <div class="tips" id="tips"></div>
+    </section>
+
+    <section class="card">
+      <h2>Who's in? 👥</h2>
+      <form class="add" id="addForm" autocomplete="off">
+        <input class="input" id="name" maxlength="20" placeholder="Add a friend or colleague">
+        <button class="chip-add" type="submit">Add</button>
+      </form>
+      <div class="people" id="people"></div>
+      <p class="hint">Tap a name to mark who paid the bill. Names are saved on this device for next time.</p>
+    </section>
+
+    <section class="result">
+      <div class="each"><span>Each person pays</span><b id="each">0</b></div>
+      <div class="mini"><span>Tip <b id="tip">0</b></span><span>Total <b id="total">0</b></span></div>
+      <ul class="owes" id="owes"></ul>
+      <button class="share" id="share">Share with the group 📲</button>
+      <p class="toast" id="toast"></p>
+    </section>
+  </main>
+  <script>
+    const $ = id => document.getElementById(id);
+    let pct = 0, payer = 0;
+    let people = (() => { try { return JSON.parse(localStorage.getItem("lunchPeople")) || null; } catch { return null; } })() || ["Me", "Rahul", "Priya"];
+    const savePeople = () => { try { localStorage.setItem("lunchPeople", JSON.stringify(people)); } catch {} };
+    const money = v => `${$("cur").value} ${v.toLocaleString(undefined, { maximumFractionDigits: 2, minimumFractionDigits: v % 1 ? 2 : 0 })}`;
+
+    [0, 5, 10, 15].forEach(p => {
+      const b = document.createElement("button");
+      b.type = "button"; b.textContent = p + "%";
+      b.onclick = () => { pct = p; calc(); };
+      $("tips").appendChild(b);
+    });
+
+    function renderPeople() {
+      const box = $("people"); box.innerHTML = "";
+      people.forEach((n, i) => {
+        const chip = document.createElement("span");
+        chip.className = "person" + (i === payer ? " payer" : "");
+        chip.textContent = (i === payer ? "💳 " : "") + n;
+        chip.style.cursor = "pointer";
+        chip.onclick = () => { payer = i; renderPeople(); calc(); };
+        const x = document.createElement("button");
+        x.type = "button"; x.textContent = "✕"; x.setAttribute("aria-label", `Remove ${n}`);
+        x.onclick = e => {
+          e.stopPropagation();
+          if (people.length <= 1) return;
+          people.splice(i, 1);
+          if (payer >= people.length || payer === i) payer = 0; else if (i < payer) payer--;
+          savePeople(); renderPeople(); calc();
+        };
+        chip.append(x); box.append(chip);
+      });
+    }
+
+    function calc() {
+      const bill = Math.max(0, parseFloat($("bill").value) || 0);
+      const tip = bill * pct / 100, total = bill + tip, n = people.length, each = total / n;
+      $("tip").textContent = money(tip);
+      $("total").textContent = money(total);
+      $("each").textContent = money(each);
+      [...$("tips").children].forEach(b => b.classList.toggle("on", b.textContent === pct + "%"));
+      const owes = $("owes"); owes.innerHTML = "";
+      people.forEach((p, i) => {
+        if (i === payer) return;
+        const li = document.createElement("li");
+        const a = document.createElement("span"); a.textContent = `${p} → ${people[payer]}`;
+        const b = document.createElement("b"); b.textContent = money(each);
+        li.append(a, b); owes.append(li);
+      });
+      if (n === 1) owes.innerHTML = "<li><span>Just you. Treat yourself 😄</span></li>";
+    }
+
+    function shareText() {
+      const bill = Math.max(0, parseFloat($("bill").value) || 0), total = bill * (1 + pct / 100), each = total / people.length;
+      const what = $("what").value.trim() || "Team lunch";
+      const lines = people.filter((_, i) => i !== payer).map(p => `• ${p}: ${money(each)}`);
+      return `🍱 ${what}\nTotal: ${money(total)}${pct ? ` (incl. ${pct}% tip)` : ""}\nEach: ${money(each)}\nPlease pay ${people[payer]}:\n${lines.join("\n")}`;
+    }
+
+    $("addForm").onsubmit = e => {
+      e.preventDefault();
+      const n = $("name").value.trim();
+      if (!n || people.length >= 30) return;
+      people.push(n); $("name").value = "";
+      savePeople(); renderPeople(); calc();
+    };
+    $("bill").oninput = calc;
+    $("cur").onchange = calc;
+    $("share").onclick = async () => {
+      const text = shareText();
+      try {
+        if (navigator.share) { await navigator.share({ text }); return; }
+        await navigator.clipboard.writeText(text);
+        $("toast").textContent = "Copied! Paste it in the team group.";
+      } catch { $("toast").textContent = "Couldn't share. Long-press to copy the amounts above."; }
+      setTimeout(() => $("toast").textContent = "", 3000);
+    };
+    renderPeople(); calc();
+  </script>
+</body>
+</html>
