@@ -4,332 +4,327 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>OffDutyCode</title>
-  <meta name="description" content="OffDutyCode: small websites and experiments, built after hours.">
-  <meta name="theme-color" content="#06070d">
+  <meta name="description" content="OffDutyCode: small websites for office days and friends, built after hours.">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌙</text></svg>">
+  <script src="pages/_shared/theme.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="pages/_shared/ui.css">
   <style>
-    :root {
-      --bg: #06070d;
-      --surface: rgba(255, 255, 255, 0.04);
-      --surface-2: rgba(255, 255, 255, 0.07);
-      --line: rgba(255, 255, 255, 0.09);
-      --line-2: rgba(255, 255, 255, 0.16);
-      --fg: #eef0f7;
-      --muted: #9097ab;
-      --green: #7cd992;
-      --violet: #9d8cff;
-      --pink: #ff7ac6;
-      --red: #ff8a8a;
-      --mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
-      --sans: "Space Grotesk", system-ui, sans-serif;
-      --radius: 20px;
+    .ico { width: 18px; height: 18px; flex-shrink: 0; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .icon-btn {
+      width: 36px; height: 36px; border-radius: 10px; border: 1px solid var(--line); background: var(--panel);
+      display: inline-grid; place-items: center; color: var(--muted); flex-shrink: 0; transition: background-color .15s, color .15s;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html { -webkit-text-size-adjust: 100%; }
-    body {
-      min-height: 100vh; background: var(--bg); color: var(--fg);
-      font-family: var(--sans); line-height: 1.55; overflow-x: hidden;
-    }
-    button, input { font: inherit; color: inherit; }
-    button { cursor: pointer; }
-    a { color: inherit; }
-    [hidden] { display: none !important; }
-    :focus-visible { outline: 2px solid var(--violet); outline-offset: 2px; }
+    .icon-btn:hover { background: var(--panel-2); color: var(--fg); }
+    .brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 650; letter-spacing: -0.01em; text-decoration: none; white-space: nowrap; }
+    .brand-mark { width: 32px; height: 32px; border-radius: 9px; display: grid; place-items: center; background: var(--accent); color: #fff; font-size: 0.95rem; flex-shrink: 0; }
+    .brand b { color: var(--accent); font-weight: 650; }
 
-    /* ---------- Background ---------- */
-    .bg { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
-    .blob { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.35; animation: drift 22s ease-in-out infinite alternate; }
-    .blob.b1 { width: 55vmax; height: 55vmax; background: var(--violet); top: -25vmax; right: -15vmax; }
-    .blob.b2 { width: 45vmax; height: 45vmax; background: var(--green); bottom: -25vmax; left: -15vmax; opacity: 0.18; animation-delay: -8s; }
-    .blob.b3 { width: 30vmax; height: 30vmax; background: var(--pink); top: 40%; left: 45%; opacity: 0.12; animation-delay: -14s; }
-    @keyframes drift { to { transform: translate(-6vmax, 5vmax) scale(1.12); } }
-    .grid-lines {
-      position: absolute; inset: 0;
-      background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px);
-      background-size: 56px 56px; opacity: 0.35;
-      mask-image: radial-gradient(ellipse at 50% 0%, #000 0%, transparent 70%);
-      -webkit-mask-image: radial-gradient(ellipse at 50% 0%, #000 0%, transparent 70%);
-    }
-
-    .wrap { width: 100%; max-width: 1080px; margin: 0 auto; padding: 0 16px; }
-    .logo { font-family: var(--mono); font-weight: 600; font-size: 1rem; text-decoration: none; letter-spacing: -0.01em; }
-    .logo span { color: var(--green); }
-    .grad { background: linear-gradient(100deg, var(--green), var(--violet) 55%, var(--pink)); -webkit-background-clip: text; background-clip: text; color: transparent; }
-
-    /* ---------- Buttons + inputs ---------- */
-    .btn {
-      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-      padding: 13px 18px; border-radius: 14px; border: 1px solid var(--line-2);
-      background: var(--surface-2); font-weight: 600; text-decoration: none; transition: transform .15s, background .15s, border-color .15s;
-    }
-    .btn:hover { transform: translateY(-1px); border-color: rgba(255,255,255,0.3); }
-    .btn:active { transform: translateY(0); }
-    .btn.green { background: var(--green); border-color: var(--green); color: #06210f; }
-    .btn.violet { background: var(--violet); border-color: var(--violet); color: #140b3a; }
-    .btn.ghost { background: transparent; }
-    .btn.small { padding: 8px 12px; border-radius: 11px; font-size: 0.85rem; }
-    .btn[disabled] { opacity: 0.6; pointer-events: none; }
-    .field { display: block; margin-bottom: 12px; }
-    .field > span { display: block; font-size: 0.8rem; color: var(--muted); margin-bottom: 6px; }
-    .input {
-      width: 100%; font-size: 1rem; background: rgba(0,0,0,0.3); border: 1px solid var(--line);
-      border-radius: 12px; padding: 12px 14px; outline: 0; transition: border-color .15s, background .15s;
-    }
-    .input:focus { border-color: var(--violet); background: rgba(0,0,0,0.45); }
-    .input::placeholder { color: #5d6478; }
+    /* ---------- Switch ---------- */
+    .switch { display: inline-flex; align-items: center; gap: 10px; font-size: 0.86rem; color: var(--muted); cursor: pointer; user-select: none; }
+    .switch input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+    .track { width: 36px; height: 20px; border-radius: 99px; background: var(--line-2); position: relative; transition: background-color .2s; flex-shrink: 0; }
+    .track::after { content: ""; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: #fff; transition: transform .2s; box-shadow: 0 1px 2px rgba(0,0,0,0.25); }
+    .switch input:checked + .track { background: var(--green); }
+    .switch input:checked + .track::after { transform: translateX(16px); }
+    .switch input:focus-visible + .track { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .switch.busy { opacity: 0.5; pointer-events: none; }
 
     /* ---------- Login ---------- */
-    #login { min-height: 100vh; display: flex; flex-direction: column; }
-    .login-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; padding: 22px 0; }
-    #clock { font-variant-numeric: tabular-nums; }
-    .pill {
-      display: inline-flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 0.75rem; color: var(--muted);
-      border: 1px solid var(--line); background: var(--surface); padding: 6px 12px; border-radius: 999px;
-    }
-    .pulse { width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 0 rgba(124,217,146,0.6); animation: pulse 2s infinite; }
-    @keyframes pulse { 70% { box-shadow: 0 0 0 8px rgba(124,217,146,0); } 100% { box-shadow: 0 0 0 0 rgba(124,217,146,0); } }
-    .login-main { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 24px 0 48px; }
-    .login-head { text-align: center; margin-bottom: 40px; }
-    .login-head h1 { font-size: clamp(2.3rem, 7.5vw, 4.4rem); line-height: 1.03; letter-spacing: -0.035em; font-weight: 700; }
-    .login-head p { color: var(--muted); margin-top: 16px; font-size: clamp(1rem, 2.6vw, 1.15rem); max-width: 520px; margin-inline: auto; }
-    .doors { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; max-width: 820px; margin: 0 auto; width: 100%; }
-    .door {
-      position: relative; background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
-      border: 1px solid var(--line); border-radius: 24px; padding: 26px 24px 24px;
-      backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-      display: flex; flex-direction: column; transition: border-color .2s, transform .2s;
-    }
-    .door::before {
-      content: ""; position: absolute; inset: -1px; border-radius: inherit; padding: 1px; pointer-events: none;
-      background: linear-gradient(140deg, var(--door), transparent 45%);
-      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-      -webkit-mask-composite: xor; mask-composite: exclude; opacity: 0.6;
-    }
-    .door.guest { --door: var(--green); }
-    .door.admin { --door: var(--violet); }
-    .door:hover { transform: translateY(-3px); }
-    .door-icon {
-      width: 48px; height: 48px; border-radius: 14px; display: grid; place-items: center; font-size: 1.5rem; margin-bottom: 16px;
-      background: color-mix(in srgb, var(--door) 16%, transparent); border: 1px solid color-mix(in srgb, var(--door) 35%, transparent);
-    }
-    .door h2 { font-size: 1.35rem; letter-spacing: -0.02em; }
-    .door > p { color: var(--muted); font-size: 0.95rem; margin: 4px 0 20px; }
-    .door form { margin-top: auto; }
-    .door .btn { width: 100%; margin-top: 4px; }
-    .error { color: var(--red); font-size: 0.85rem; min-height: 1.3em; margin: 2px 0 6px; }
+    #login { min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px 16px; position: relative; }
+    #login::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 340px; background: radial-gradient(600px 260px at 50% 0%, var(--accent-soft), transparent 70%); pointer-events: none; }
+    .login-theme { position: absolute; top: 16px; right: 16px; }
+    .login-box { width: 100%; max-width: 400px; position: relative; }
+    .login-box .brand { margin-bottom: 28px; font-size: 1.05rem; }
+    .login-card { padding: clamp(22px, 5vw, 32px); box-shadow: var(--shadow-lg); }
+    .login-card h1 { font-size: 1.45rem; font-weight: 650; letter-spacing: -0.025em; line-height: 1.2; }
+    .login-card .sub { color: var(--muted); margin: 6px 0 20px; font-size: 0.94rem; }
+    .when { display: flex; align-items: center; gap: 8px; font-size: 0.82rem; color: var(--muted); padding: 9px 12px; border-radius: 10px; background: var(--inset); border: 1px solid var(--line); margin-bottom: 20px; font-variant-numeric: tabular-nums; }
+    .when .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
+    .tabs { display: grid; grid-template-columns: 1fr 1fr; margin-bottom: 20px; }
+    .tabs button { padding: 8px; }
+    .field { display: block; margin-bottom: 14px; }
+    .login-card .btn { width: 100%; padding: 11px; margin-top: 2px; }
+    .fine { color: var(--dim); font-size: 0.8rem; margin-top: 14px; text-align: center; }
+    .error { color: var(--red); font-size: 0.84rem; min-height: 1.3em; margin: -4px 0 6px; }
     .shake { animation: shake .4s; }
-    @keyframes shake { 20%, 60% { transform: translateX(-6px); } 40%, 80% { transform: translateX(6px); } }
-    .login-foot { text-align: center; color: var(--muted); font-family: var(--mono); font-size: 0.75rem; padding: 0 0 28px; }
+    @keyframes shake { 20%, 60% { transform: translateX(-5px); } 40%, 80% { transform: translateX(5px); } }
+    .login-foot { color: var(--dim); font-size: 0.8rem; text-align: center; margin-top: 22px; }
 
-    /* ---------- App ---------- */
-    .topbar {
-      position: sticky; top: 0; z-index: 5; border-bottom: 1px solid var(--line);
-      background: rgba(6, 7, 13, 0.7); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    /* ---------- App shell ---------- */
+    #app { display: grid; grid-template-columns: auto 1fr; grid-template-rows: minmax(0, 1fr); height: 100vh; height: 100dvh; }
+    .sidebar {
+      --w: 264px; width: var(--w); height: 100%; display: flex; flex-direction: column; gap: 4px;
+      background: var(--panel); border-right: 1px solid var(--line); padding: 14px 12px;
+      transition: width .28s cubic-bezier(.4,0,.2,1), transform .28s cubic-bezier(.4,0,.2,1), background-color .25s;
+      overflow: hidden; z-index: 20;
     }
-    .topbar .wrap { display: flex; align-items: center; gap: 10px; height: 62px; }
-    .topbar .logo { margin-right: auto; }
-    .who { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; }
-    .role { font-family: var(--mono); font-size: 0.68rem; padding: 2px 8px; border-radius: 99px; background: rgba(124,217,146,0.14); color: var(--green); }
-    .role.admin { background: rgba(157,140,255,0.16); color: var(--violet); }
-    .icon-btn { width: 38px; height: 38px; border-radius: 11px; border: 1px solid var(--line); background: var(--surface); display: grid; place-items: center; font-size: 1rem; }
-    .icon-btn:hover { border-color: var(--line-2); }
-
-    .intro { padding: 40px 0 24px; }
-    .intro h1 { font-size: clamp(1.9rem, 5.5vw, 2.9rem); letter-spacing: -0.03em; line-height: 1.1; }
-    .intro p { color: var(--muted); margin-top: 8px; max-width: 560px; }
-    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 24px; }
-    .stat { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 14px 16px; }
-    .stat b { display: block; font-family: var(--mono); font-size: 1.6rem; font-weight: 600; line-height: 1.2; }
-    .stat span { color: var(--muted); font-size: 0.8rem; }
-    .sync {
-      display: flex; align-items: center; gap: 10px; margin-top: 12px; padding: 12px 14px; border-radius: 14px;
-      border: 1px solid var(--line); background: var(--surface); font-size: 0.88rem; color: var(--muted); width: 100%; text-align: left;
+    .sb-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 2px 4px 14px; min-height: 50px; }
+    .sb-label { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--dim); padding: 14px 10px 6px; white-space: nowrap; }
+    .nav { display: grid; gap: 2px; }
+    .nav-scroll { flex: 1; overflow-y: auto; overflow-x: hidden; margin: 0 -4px; padding: 0 4px; }
+    .nav-item {
+      position: relative; display: flex; align-items: center; gap: 12px; padding: 8px 10px; border-radius: 10px;
+      color: var(--muted); text-decoration: none; font-weight: 500; font-size: 0.92rem; white-space: nowrap;
+      border: 0; background: transparent; width: 100%; text-align: left; transition: background-color .15s, color .15s;
     }
-    .sync .dot { width: 8px; height: 8px; border-radius: 50%; background: #e3b341; flex-shrink: 0; }
-    .sync.on .dot { background: var(--green); }
-    .sync b { color: var(--fg); font-weight: 600; }
-    .sync em { margin-left: auto; font-style: normal; color: var(--violet); white-space: nowrap; }
+    .nav-item:hover { background: var(--panel-2); color: var(--fg); }
+    .nav-item.active { background: var(--accent-soft); color: var(--accent); }
+    .nav-item.active::before { content: ""; position: absolute; left: -12px; top: 8px; bottom: 8px; width: 3px; border-radius: 0 3px 3px 0; background: var(--accent); }
+    .nav-item .emo { width: 22px; height: 22px; display: grid; place-items: center; font-size: 1rem; flex-shrink: 0; }
+    .nav-item .txt { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; transition: opacity .2s; }
+    .nav-item .vis { width: 7px; height: 7px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
+    .nav-item .vis.off { background: transparent; border: 1.5px solid var(--dim); }
+    .nav-item .status { width: 8px; height: 8px; border-radius: 50%; background: var(--amber); flex-shrink: 0; }
+    .nav-item .status.on { background: var(--green); }
+    .sb-foot { display: grid; gap: 8px; padding-top: 10px; border-top: 1px solid var(--line); }
+    .theme-row { display: flex; align-items: center; gap: 12px; padding: 8px 10px; border-radius: 10px; color: var(--muted); font-size: 0.92rem; font-weight: 500; white-space: nowrap; }
+    .theme-row .txt { flex: 1; }
+    .user { display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 12px; background: var(--panel-2); white-space: nowrap; }
+    .avatar { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; font-weight: 650; font-size: 0.85rem; color: #fff; background: var(--green); flex-shrink: 0; }
+    .avatar.admin { background: var(--accent); }
+    .user .meta { flex: 1; min-width: 0; line-height: 1.25; }
+    .user .meta b { display: block; font-weight: 600; font-size: 0.9rem; overflow: hidden; text-overflow: ellipsis; }
+    .user .meta span { font-size: 0.76rem; color: var(--muted); }
+    .user .icon-btn { width: 32px; height: 32px; background: transparent; border-color: transparent; }
+    .user .icon-btn:hover { background: var(--panel); }
+    #collapseBtn .ico { transition: transform .28s; }
+    .brand-name { transition: opacity .2s; }
 
-    .toolbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 8px 0 18px; }
-    .search { position: relative; flex: 1 1 240px; }
-    .search .input { padding-left: 38px; }
-    .search::before { content: "⌕"; position: absolute; left: 14px; top: 50%; transform: translateY(-52%); color: var(--muted); font-size: 1.1rem; }
-    .seg { display: inline-flex; padding: 4px; gap: 4px; border: 1px solid var(--line); border-radius: 13px; background: var(--surface); }
-    .seg button { border: 0; background: transparent; padding: 8px 12px; border-radius: 9px; font-size: 0.85rem; color: var(--muted); }
-    .seg button[aria-pressed="true"] { background: var(--surface-2); color: var(--fg); }
-
-    .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 16px; padding-bottom: 56px; }
-    .card {
-      --h: 260; position: relative; display: flex; flex-direction: column; gap: 4px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.055), rgba(255,255,255,0.02));
-      border: 1px solid var(--line); border-radius: var(--radius); padding: 20px;
-      transition: transform .2s, border-color .2s, box-shadow .2s;
+    /* Collapsed sidebar (desktop) */
+    @media (min-width: 900px) {
+      body.collapsed .sidebar { --w: 72px; }
+      body.collapsed .sidebar .txt, body.collapsed .brand-name, body.collapsed .user .meta, body.collapsed .theme-row > .ico { display: none; }
+      body.collapsed .sb-label { height: 1px; padding: 0; margin: 12px 6px; overflow: hidden; color: transparent; background: var(--line); }
+      body.collapsed .sb-head { flex-direction: column; gap: 10px; padding: 2px 0 10px; }
+      body.collapsed .nav-item { justify-content: center; padding: 9px 0; }
+      body.collapsed .nav-item .vis, body.collapsed .nav-item .status { position: absolute; top: 5px; right: 6px; }
+      body.collapsed .nav-item.active::before { left: -12px; }
+      body.collapsed #collapseBtn .ico { transform: rotate(180deg); }
+      body.collapsed .theme-row { justify-content: center; padding: 8px 0; }
+      body.collapsed .user { flex-direction: column; background: transparent; padding: 0; gap: 6px; }
+      #menuBtn, .scrim { display: none; }
     }
-    .card:hover { transform: translateY(-3px); border-color: hsla(var(--h), 80%, 70%, 0.35); box-shadow: 0 18px 50px -20px hsla(var(--h), 80%, 60%, 0.45); }
-    .card-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 10px; }
-    .tile {
-      width: 52px; height: 52px; border-radius: 15px; display: grid; place-items: center; font-size: 1.6rem;
-      background: linear-gradient(140deg, hsla(var(--h), 85%, 65%, 0.28), hsla(calc(var(--h) + 40), 85%, 60%, 0.1));
-      border: 1px solid hsla(var(--h), 85%, 70%, 0.3);
+
+    /* Mobile: sidebar slides in */
+    @media (max-width: 899px) {
+      #app { grid-template-columns: 1fr; }
+      .sidebar { position: fixed; inset: 0 auto 0 0; transform: translateX(-102%); box-shadow: var(--shadow-lg); width: min(280px, 86vw); }
+      body.sb-open .sidebar { transform: none; }
+      .scrim { position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 15; opacity: 0; pointer-events: none; transition: opacity .25s; }
+      body.sb-open .scrim { opacity: 1; pointer-events: auto; }
+      #collapseBtn { display: none; }
     }
-    .badge { font-family: var(--mono); font-size: 0.68rem; padding: 3px 9px; border-radius: 99px; border: 1px solid var(--line); color: var(--muted); }
-    .badge.public { color: var(--green); border-color: rgba(124,217,146,0.35); background: rgba(124,217,146,0.08); }
-    .card h3 { font-size: 1.18rem; letter-spacing: -0.015em; }
-    .card p { color: var(--muted); font-size: 0.93rem; flex: 1; }
-    .card .path { font-family: var(--mono); font-size: 0.72rem; color: #626a80; margin-top: 6px; }
-    .card-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line); }
-    .card-foot .btn { margin-left: auto; }
 
-    .switch { display: inline-flex; align-items: center; gap: 10px; font-size: 0.85rem; color: var(--muted); cursor: pointer; user-select: none; }
-    .switch input { position: absolute; opacity: 0; width: 1px; height: 1px; }
-    .track { width: 42px; height: 24px; border-radius: 99px; background: rgba(255,255,255,0.12); position: relative; transition: background .2s; flex-shrink: 0; }
-    .track::after { content: ""; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: #fff; transition: transform .2s; box-shadow: 0 1px 3px rgba(0,0,0,0.4); }
-    .switch input:checked + .track { background: var(--green); }
-    .switch input:checked + .track::after { transform: translateX(18px); }
-    .switch input:focus-visible + .track { outline: 2px solid var(--violet); outline-offset: 2px; }
-    .switch input:checked ~ .lbl { color: var(--fg); }
-    .switch.busy { opacity: 0.6; pointer-events: none; }
+    /* ---------- Main ---------- */
+    .main { display: flex; flex-direction: column; min-width: 0; min-height: 0; height: 100%; }
+    .topbar { display: flex; align-items: center; gap: 12px; height: 60px; padding: 0 16px; border-bottom: 1px solid var(--line); background: var(--panel); flex-shrink: 0; transition: background-color .25s; }
+    @media (min-width: 700px) { .topbar { padding: 0 28px; } }
+    .crumb { display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1; font-weight: 600; }
+    .crumb .muted { font-weight: 500; }
+    .crumb .sep { color: var(--dim); }
+    .crumb .cur { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .top-actions { display: flex; align-items: center; gap: 10px; }
+    @media (max-width: 560px) { #todayPill, #viewSwitch .lbl, #crumbRoot, #crumbSep { display: none !important; } }
+    .content { flex: 1; min-height: 0; overflow-y: auto; }
+    .home { width: 100%; max-width: 1180px; margin: 0 auto; padding: clamp(20px, 4vw, 36px) 16px 56px; }
+    @media (min-width: 700px) { .home { padding-left: 28px; padding-right: 28px; } }
+    .hello { margin-bottom: 22px; }
+    .hello h1 { font-size: clamp(1.45rem, 3.5vw, 1.9rem); font-weight: 650; letter-spacing: -0.025em; line-height: 1.2; }
+    .hello p { color: var(--muted); margin-top: 4px; }
+    .stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: 14px; }
+    @media (min-width: 900px) { .stats { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+    .stat { padding: 16px; }
+    .stat span { display: block; font-size: 0.8rem; color: var(--muted); font-weight: 500; }
+    .stat b { display: block; font-size: 1.6rem; font-weight: 650; letter-spacing: -0.02em; margin-top: 2px; }
+    .stat.sync { display: none; cursor: pointer; text-align: left; font: inherit; color: inherit; }
+    @media (min-width: 900px) { .stat.sync { display: block; } }
+    .stat.sync b { font-size: 1rem; display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+    .stat.sync:hover { border-color: var(--line-2); }
+    .sync-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--amber); flex-shrink: 0; }
+    .sync-dot.on { background: var(--green); }
+    .sync-bar { display: flex; align-items: center; gap: 10px; width: 100%; margin-bottom: 14px; padding: 11px 14px; border-radius: 12px; border: 1px solid var(--line); background: var(--panel); color: var(--muted); font-size: 0.88rem; text-align: left; }
+    .sync-bar b { color: var(--fg); font-weight: 600; }
+    .sync-bar em { margin-left: auto; font-style: normal; color: var(--accent); font-weight: 600; white-space: nowrap; }
+    @media (min-width: 900px) { .sync-bar { display: none; } }
+    .toolbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 18px; }
+    .search { position: relative; flex: 1 1 240px; max-width: 420px; }
+    .search .ico { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--dim); width: 16px; height: 16px; }
+    .search .input { padding-left: 36px; }
 
-    .skeleton { min-height: 220px; background: linear-gradient(90deg, var(--surface) 0%, var(--surface-2) 50%, var(--surface) 100%); background-size: 200% 100%; animation: shimmer 1.4s infinite; border: 1px solid var(--line); border-radius: var(--radius); }
+    .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 290px), 1fr)); gap: 16px; }
+    .pcard { display: flex; flex-direction: column; overflow: hidden; padding: 0; transition: border-color .2s, box-shadow .2s, transform .2s; }
+    .pcard:hover { border-color: var(--line-2); box-shadow: var(--shadow-lg); transform: translateY(-2px); }
+    .cover { position: relative; display: block; height: 170px; overflow: hidden; background: var(--inset); border-bottom: 1px solid var(--line); }
+    .cover iframe { position: absolute; top: 0; left: 0; width: 1280px; height: 920px; border: 0; transform-origin: 0 0; transform: scale(var(--s, 0.25)); pointer-events: none; opacity: 0; transition: opacity .4s; }
+    .cover iframe.ready { opacity: 1; }
+    .cover .big { position: absolute; inset: 0; display: grid; place-items: center; font-size: 2.4rem; }
+    .pbody { padding: 16px 18px 6px; flex: 1; display: flex; flex-direction: column; gap: 6px; }
+    .phead { display: flex; align-items: center; gap: 10px; }
+    .phead .emo { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; background: var(--panel-2); border: 1px solid var(--line); font-size: 1.05rem; flex-shrink: 0; }
+    .phead h3 { font-size: 1rem; font-weight: 600; flex: 1; min-width: 0; letter-spacing: -0.01em; }
+    .badge { font-size: 0.72rem; font-weight: 550; padding: 2px 8px; border-radius: 99px; background: var(--panel-2); color: var(--muted); white-space: nowrap; }
+    .badge.public { background: var(--green-soft); color: var(--green); }
+    .pbody p { color: var(--muted); font-size: 0.88rem; flex: 1; }
+    .pbody .path { font-family: var(--mono); font-size: 0.72rem; color: var(--dim); }
+    .pfoot { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 12px 18px 0; padding: 12px 0 16px; border-top: 1px solid var(--line); }
+    .pfoot .btn { margin-left: auto; padding: 7px 14px; font-size: 0.85rem; }
+    .skeleton { height: 320px; border-radius: var(--radius); background: linear-gradient(90deg, var(--panel) 0%, var(--panel-2) 50%, var(--panel) 100%); background-size: 200% 100%; animation: shimmer 1.4s infinite; border: 1px solid var(--line); }
     @keyframes shimmer { to { background-position: -200% 0; } }
-    .empty { grid-column: 1 / -1; text-align: center; padding: 56px 16px; border: 1px dashed var(--line-2); border-radius: var(--radius); color: var(--muted); }
-    .empty b { display: block; font-size: 2rem; margin-bottom: 8px; }
-    .empty code { font-family: var(--mono); color: var(--fg); }
+    .empty { grid-column: 1 / -1; text-align: center; padding: 52px 16px; border: 1px dashed var(--line-2); border-radius: var(--radius); color: var(--muted); }
+    .empty b { display: block; font-size: 1.8rem; margin-bottom: 6px; }
+    .empty code { font-family: var(--mono); color: var(--fg); font-size: 0.85em; }
 
-    /* ---------- Viewer ---------- */
-    #viewer { position: fixed; inset: 0; z-index: 20; background: var(--bg); display: flex; flex-direction: column; }
-    .viewer-bar { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-bottom: 1px solid var(--line); background: rgba(6,7,13,0.9); }
-    .viewer-bar strong { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: center; font-size: 0.95rem; }
-    #frame { flex: 1; width: 100%; border: 0; background: #fff; }
+    #viewer { height: 100%; display: flex; }
+    #frame { flex: 1; width: 100%; height: 100%; border: 0; background: var(--bg); }
 
     /* ---------- Dialog + toast ---------- */
-    dialog {
-      margin: auto; width: min(480px, calc(100% - 32px)); max-height: calc(100% - 32px); overflow-y: auto;
-      background: #0e1019; color: var(--fg); border: 1px solid var(--line-2); border-radius: 22px; padding: 24px;
-    }
-    dialog::backdrop { background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); }
-    dialog h2 { font-size: 1.3rem; letter-spacing: -0.02em; margin-bottom: 6px; }
-    dialog p, dialog li { color: var(--muted); font-size: 0.92rem; }
+    dialog { margin: auto; width: min(460px, calc(100% - 32px)); max-height: calc(100% - 32px); overflow-y: auto; background: var(--panel); color: var(--fg); border: 1px solid var(--line); border-radius: 16px; padding: 24px; box-shadow: var(--shadow-lg); }
+    dialog::backdrop { background: rgba(0,0,0,0.45); }
+    dialog h2 { font-size: 1.15rem; font-weight: 650; margin-bottom: 6px; }
+    dialog p, dialog li { color: var(--muted); font-size: 0.9rem; }
     dialog ol { padding-left: 20px; margin: 12px 0 16px; display: grid; gap: 6px; }
     dialog li b { color: var(--fg); font-weight: 600; }
+    dialog code { font-family: var(--mono); font-size: 0.85em; }
+    dialog a { color: var(--accent); }
     dialog .row { display: flex; gap: 10px; margin-top: 8px; }
     dialog .row .btn { flex: 1; }
     .note { margin-top: 14px; font-size: 0.8rem !important; }
-    .connected { padding: 14px; border-radius: 14px; background: rgba(124,217,146,0.08); border: 1px solid rgba(124,217,146,0.3); color: var(--fg) !important; margin: 12px 0; }
-    #toast {
-      position: fixed; left: 50%; bottom: max(20px, env(safe-area-inset-bottom)); transform: translate(-50%, 140%); z-index: 30;
-      max-width: calc(100% - 32px); padding: 12px 18px; border-radius: 14px; font-size: 0.9rem;
-      background: #171a26; border: 1px solid var(--line-2); box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-      visibility: hidden; transition: transform .3s, visibility .3s;
-    }
+    .connected { padding: 12px 14px; border-radius: 10px; background: var(--green-soft); color: var(--fg) !important; margin: 12px 0; }
+    #toast { position: fixed; left: 50%; bottom: max(20px, env(safe-area-inset-bottom)); transform: translate(-50%, 140%); z-index: 40; max-width: calc(100% - 32px); padding: 11px 16px; border-radius: 12px; font-size: 0.9rem; background: var(--fg); color: var(--bg); box-shadow: var(--shadow-lg); visibility: hidden; transition: transform .3s, visibility .3s; }
     #toast.show { transform: translate(-50%, 0); visibility: visible; }
-    #toast.error { border-color: rgba(255,138,138,0.5); }
-
-    @media (max-width: 680px) {
-      .doors { grid-template-columns: 1fr; }
-      .login-head { margin-bottom: 28px; }
-      .who .name { display: none; }
-      .stat b { font-size: 1.3rem; }
-      .stat { padding: 12px; }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after { animation: none !important; transition: none !important; }
-    }
+    #toast.error { background: var(--red); color: #fff; }
   </style>
 </head>
 <body>
-  <div class="bg" aria-hidden="true"><div class="grid-lines"></div><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div></div>
+  <!-- Icons -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></symbol>
+    <symbol id="i-collapse" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M9 3v18"/><path d="m16 15-3-3 3-3"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M6.3 17.7l-1.4 1.4M19.1 4.9l-1.4 1.4"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></symbol>
+    <symbol id="i-logout" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></symbol>
+    <symbol id="i-external" viewBox="0 0 24 24"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+    <symbol id="i-sync" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></symbol>
+  </svg>
 
   <!-- ============ Login ============ -->
-  <div id="login" class="wrap">
-    <div class="login-top">
-      <span class="logo">off<span>duty</span>code</span>
-      <span class="pill"><i class="pulse"></i><span id="clock">--:--</span></span>
-    </div>
-    <main class="login-main">
-      <div class="login-head">
-        <h1>Small websites,<br><span class="grad">built after hours.</span></h1>
-        <p>A little lab of tools and experiments made when the day job ends. Choose how you're coming in.</p>
-      </div>
-      <div class="doors">
-        <section class="door guest">
-          <div class="door-icon">👋</div>
-          <h2>Guest</h2>
-          <p>Look around the public projects. No password needed.</p>
+  <div id="login">
+    <button class="icon-btn login-theme" data-theme-toggle aria-label="Switch dark or light mode"><svg class="ico"><use href="#i-moon"/></svg></button>
+    <div class="login-box">
+      <span class="brand"><span class="brand-mark">🌙</span><span>off<b>duty</b>code</span></span>
+      <section class="card login-card">
+        <h1>Welcome to offdutycode</h1>
+        <p class="sub">Small websites for office days and friends, built after hours.</p>
+        <div class="when"><i class="dot"></i><span id="clock">--</span></div>
+        <div class="seg tabs" role="tablist" aria-label="Sign in as">
+          <button role="tab" id="tabGuest" aria-selected="true" aria-pressed="true" aria-controls="guestPanel">Guest</button>
+          <button role="tab" id="tabAdmin" aria-selected="false" aria-pressed="false" aria-controls="adminDoor">Admin</button>
+        </div>
+        <div id="guestPanel" role="tabpanel" aria-labelledby="tabGuest">
           <form id="guestForm" autocomplete="off">
-            <label class="field"><span>Your name (optional)</span><input class="input" id="guestName" maxlength="24" placeholder="guest"></label>
-            <button class="btn green" type="submit">Enter as guest →</button>
+            <label class="field"><span class="label">Your name (optional)</span><input class="input" id="guestName" maxlength="24" placeholder="guest"></label>
+            <button class="btn primary" type="submit">Continue as guest</button>
           </form>
-        </section>
-        <section class="door admin" id="adminDoor">
-          <div class="door-icon">🔐</div>
-          <h2>Admin</h2>
-          <p>Open every page and choose what guests can see.</p>
+          <p class="fine">No password needed. You'll see the public pages.</p>
+        </div>
+        <div id="adminDoor" role="tabpanel" aria-labelledby="tabAdmin" hidden>
           <form id="adminForm">
-            <label class="field"><span>Username</span><input class="input" id="adminUser" autocomplete="username" autocapitalize="off" spellcheck="false" required></label>
-            <label class="field"><span>Password</span><input class="input" id="adminPass" type="password" autocomplete="current-password" required></label>
+            <label class="field"><span class="label">Username</span><input class="input" id="adminUser" autocomplete="username" autocapitalize="off" spellcheck="false" required></label>
+            <label class="field"><span class="label">Password</span><input class="input" id="adminPass" type="password" autocomplete="current-password" required></label>
             <p class="error" id="loginError" aria-live="polite"></p>
-            <button class="btn violet" type="submit">Sign in →</button>
+            <button class="btn primary" type="submit">Sign in</button>
           </form>
-        </section>
-      </div>
-    </main>
-    <p class="login-foot">offdutycode.com · built after hours · powered by ☕</p>
+        </div>
+      </section>
+      <p class="login-foot">offdutycode.com · built after hours ☕</p>
+    </div>
   </div>
 
   <!-- ============ App ============ -->
   <div id="app" hidden>
-    <header class="topbar">
-      <div class="wrap">
-        <a class="logo" href="#/">off<span>duty</span>code</a>
-        <div class="who"><span class="name" id="userName"></span><span class="role" id="userRole"></span></div>
-        <button class="icon-btn" id="settingsBtn" title="GitHub settings" aria-label="GitHub settings" hidden>⚙️</button>
-        <button class="btn small ghost" id="logoutBtn">Log out</button>
+    <aside class="sidebar" id="sidebar">
+      <div class="sb-head">
+        <a class="brand" href="#/"><span class="brand-mark">🌙</span><span class="brand-name">off<b>duty</b>code</span></a>
+        <button class="icon-btn" id="collapseBtn" aria-label="Collapse sidebar" title="Collapse sidebar"><svg class="ico"><use href="#i-collapse"/></svg></button>
       </div>
-    </header>
-    <main class="wrap">
-      <section class="intro">
-        <h1 id="greeting">Hello</h1>
-        <p id="introText"></p>
-        <div id="adminBits" hidden>
-          <div class="stats">
-            <div class="stat"><b id="statAll">0</b><span>pages</span></div>
-            <div class="stat"><b id="statPublic">0</b><span>shown to guests</span></div>
-            <div class="stat"><b id="statHidden">0</b><span>admin only</span></div>
-          </div>
-          <button class="sync" id="syncBtn" type="button"><i class="dot"></i><span id="syncText"></span><em id="syncAction"></em></button>
-        </div>
-      </section>
-      <div class="toolbar">
-        <label class="search"><input class="input" id="search" type="search" placeholder="Search pages" aria-label="Search pages"></label>
-        <div class="seg" id="filter" hidden>
-          <button data-f="all" aria-pressed="true">All</button>
-          <button data-f="public" aria-pressed="false">Shown</button>
-          <button data-f="hidden" aria-pressed="false">Hidden</button>
+      <div class="nav-scroll">
+        <p class="sb-label">Menu</p>
+        <nav class="nav">
+          <a class="nav-item" href="#/" id="navHome" title="Overview"><svg class="ico"><use href="#i-grid"/></svg><span class="txt">Overview</span></a>
+        </nav>
+        <p class="sb-label">Pages</p>
+        <nav class="nav" id="navPages"></nav>
+        <div id="navAdmin" hidden>
+          <p class="sb-label">Admin</p>
+          <nav class="nav">
+            <button class="nav-item" id="navSync" title="GitHub sync"><svg class="ico"><use href="#i-sync"/></svg><span class="txt">GitHub sync</span><i class="status" id="navSyncDot"></i></button>
+          </nav>
         </div>
       </div>
-      <div class="cards" id="cards"></div>
-    </main>
-  </div>
+      <div class="sb-foot">
+        <div class="theme-row">
+          <svg class="ico"><use href="#i-moon"/></svg><span class="txt">Dark mode</span>
+          <label class="switch" title="Dark mode"><input type="checkbox" id="themeSwitch" aria-label="Dark mode"><span class="track"></span></label>
+        </div>
+        <div class="user">
+          <span class="avatar" id="avatar"></span>
+          <span class="meta"><b id="userName"></b><span id="userRole"></span></span>
+          <button class="icon-btn" id="logoutBtn" aria-label="Log out" title="Log out"><svg class="ico"><use href="#i-logout"/></svg></button>
+        </div>
+      </div>
+    </aside>
+    <div class="scrim" id="scrim"></div>
 
-  <!-- ============ Page viewer ============ -->
-  <div id="viewer" hidden>
-    <div class="viewer-bar">
-      <a class="btn small" href="#/">← Back</a>
-      <strong id="viewerTitle"></strong>
-      <a class="btn small" id="viewerOpen" target="_blank" rel="noopener">Open ↗</a>
+    <div class="main">
+      <header class="topbar">
+        <button class="icon-btn" id="menuBtn" aria-label="Open menu"><svg class="ico"><use href="#i-menu"/></svg></button>
+        <div class="crumb"><span class="muted" id="crumbRoot">Overview</span><span class="sep" id="crumbSep" hidden>/</span><span class="cur" id="crumbCur"></span></div>
+        <div class="top-actions">
+          <label class="switch" id="viewSwitch" hidden><input type="checkbox" id="viewGuest" aria-label="Show this page to guests"><span class="track"></span><span class="lbl">Public</span></label>
+          <a class="icon-btn" id="viewOpen" target="_blank" rel="noopener" aria-label="Open in new tab" title="Open in new tab" hidden><svg class="ico"><use href="#i-external"/></svg></a>
+          <span class="pill" id="todayPill"><i class="dot"></i><span id="todayText"></span></span>
+        </div>
+      </header>
+
+      <div class="content" id="content">
+        <section class="home" id="home">
+          <div class="hello"><h1 id="greeting">Hello</h1><p id="introText"></p></div>
+          <div id="adminBits" hidden>
+            <div class="stats">
+              <div class="card stat"><span>Total pages</span><b id="statAll">0</b></div>
+              <div class="card stat"><span>Public</span><b id="statPublic">0</b></div>
+              <div class="card stat"><span>Admin only</span><b id="statHidden">0</b></div>
+              <button class="card stat sync" id="syncStat" type="button"><span>GitHub sync</span><b><i class="sync-dot" id="syncDot"></i><span id="syncShort"></span></b></button>
+            </div>
+            <button class="sync-bar" id="syncBar" type="button"><i class="sync-dot" id="syncDot2"></i><span id="syncText"></span><em id="syncAction"></em></button>
+          </div>
+          <div class="toolbar">
+            <label class="search"><svg class="ico"><use href="#i-search"/></svg><input class="input" id="search" type="search" placeholder="Search pages" aria-label="Search pages"></label>
+            <div class="seg" id="filter" hidden>
+              <button data-f="all" aria-pressed="true">All</button>
+              <button data-f="public" aria-pressed="false">Public</button>
+              <button data-f="hidden" aria-pressed="false">Hidden</button>
+            </div>
+          </div>
+          <div class="cards" id="cards"></div>
+        </section>
+        <section id="viewer" hidden>
+          <iframe id="frame" title="Page" allow="fullscreen; clipboard-write"></iframe>
+        </section>
+      </div>
     </div>
-    <iframe id="frame" title="Page preview" allow="fullscreen; clipboard-write"></iframe>
   </div>
 
   <!-- ============ GitHub settings ============ -->
   <dialog id="settings">
     <h2>Save changes to GitHub</h2>
-    <p id="settingsReason">Guest visibility is stored in <code>pages/settings.json</code> in your repo, so every visitor sees the same thing. To let this page update that file, connect a GitHub key once on this device.</p>
-    <div id="ghConnected" class="connected" hidden>✅ Connected. Ticking a checkbox saves straight to GitHub.</div>
+    <p id="settingsReason"></p>
+    <div id="ghConnected" class="connected" hidden>✅ Connected. Switch changes save straight to GitHub.</div>
     <div id="ghForm">
       <ol>
         <li>Open <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">GitHub → new fine-grained token</a>.</li>
@@ -338,15 +333,15 @@
         <li>Tap <b>Generate token</b>, copy the <code>github_pat_…</code> code and paste it here.</li>
         <li>Can't see these options on your phone? Switch the browser to <b>desktop site</b>.</li>
       </ol>
-      <label class="field"><span>GitHub token</span><input class="input" id="ghToken" type="password" autocomplete="off" spellcheck="false" placeholder="github_pat_…"></label>
+      <label class="field"><span class="label">GitHub token</span><input class="input" id="ghToken" type="password" autocomplete="off" spellcheck="false" placeholder="github_pat_…"></label>
       <p class="error" id="ghError" aria-live="polite"></p>
     </div>
     <div class="row">
       <button class="btn" id="ghClose" type="button">Close</button>
-      <button class="btn green" id="ghSave" type="button">Connect</button>
+      <button class="btn primary" id="ghSave" type="button">Connect</button>
       <button class="btn" id="ghDisconnect" type="button" hidden>Disconnect</button>
     </div>
-    <p class="note">The key is kept only in this browser. Anyone using this device could use it, so only connect on your own phone or computer.</p>
+    <p class="note">The key is kept only in this browser. Only connect on your own phone or computer.</p>
   </dialog>
 
   <div id="toast" role="status" aria-live="polite"></div>
@@ -368,15 +363,15 @@
     const isPublic = slug => !!(state.settings.pages[slug] && state.settings.pages[slug].guest === true);
     const validSlug = s => /^[A-Za-z0-9][\w-]*$/.test(s);
     const pageUrl = slug => `${CONFIG.dir}/${encodeURIComponent(slug)}/`;
+    const isMobile = () => matchMedia("(max-width: 899px)").matches;
 
-    /* ---------- Small helpers ---------- */
+    /* ---------- Helpers ---------- */
     let toastTimer;
     function toast(msg, type = "") {
       const t = $("#toast");
       t.textContent = msg; t.className = "show " + type;
       clearTimeout(toastTimer); toastTimer = setTimeout(() => t.className = type, 3600);
     }
-    function hue(str) { let h = 0; for (const c of str) h = (h * 31 + c.charCodeAt(0)) % 360; return h; }
     function pretty(slug) { return slug.replace(/[-_]+/g, " ").replace(/\b\w/g, c => c.toUpperCase()); }
     async function sha256(text) {
       const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
@@ -389,14 +384,45 @@
       const date = d.toLocaleDateString([], { weekday: "short", day: "numeric", month: "short", year: "numeric" });
       const time = d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
       $("#clock").textContent = `${date} · ${time}`;
+      $("#todayText").textContent = `${d.toLocaleDateString([], { weekday: "short", day: "numeric", month: "short" })} · ${d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
     }
     tickClock(); setInterval(tickClock, 1000);
 
+    /* ---------- Theme ---------- */
+    const currentTheme = () => document.documentElement.getAttribute("data-theme") || "dark";
+    function setTheme(t) {
+      document.documentElement.setAttribute("data-theme", t);
+      try { localStorage.setItem("odc.theme", t); } catch {}
+      syncThemeUi();
+    }
+    function syncThemeUi() {
+      const dark = currentTheme() === "dark";
+      $("#themeSwitch").checked = dark;
+      document.querySelectorAll("[data-theme-toggle] use").forEach(u => u.setAttribute("href", dark ? "#i-sun" : "#i-moon"));
+    }
+    $("#themeSwitch").addEventListener("change", e => setTheme(e.target.checked ? "dark" : "light"));
+    document.querySelectorAll("[data-theme-toggle]").forEach(b => b.addEventListener("click", () => setTheme(currentTheme() === "dark" ? "light" : "dark")));
+    addEventListener("storage", e => { if (e.key === "odc.theme") syncThemeUi(); });
+    syncThemeUi();
+
+    /* ---------- Sidebar ---------- */
+    if (store.get("localStorage", "odc.collapsed")) document.body.classList.add("collapsed");
+    $("#collapseBtn").addEventListener("click", () => {
+      const c = document.body.classList.toggle("collapsed");
+      store.set("localStorage", "odc.collapsed", c);
+      $("#collapseBtn").setAttribute("aria-label", c ? "Expand sidebar" : "Collapse sidebar");
+    });
+    const closeMenu = () => document.body.classList.remove("sb-open");
+    $("#menuBtn").addEventListener("click", () => document.body.classList.add("sb-open"));
+    $("#scrim").addEventListener("click", closeMenu);
+    $("#sidebar").addEventListener("click", e => { if (e.target.closest("a.nav-item") && isMobile()) closeMenu(); });
+    addEventListener("keydown", e => { if (e.key === "Escape") closeMenu(); });
+
     /* ---------- GitHub ---------- */
     const token = () => store.get("localStorage", "odc.ghToken");
-    async function gh(path, opts = {}, useToken = true) {
+    async function gh(path, opts = {}) {
       const headers = { Accept: "application/vnd.github+json", ...(opts.headers || {}) };
-      const t = useToken && token();
+      const t = token();
       if (t) headers.Authorization = `Bearer ${t}`;
       const r = await fetch(`https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}${path}`, { ...opts, headers, cache: "no-store" });
       if (!r.ok) { const e = new Error(`GitHub said ${r.status}`); e.status = r.status; throw e; }
@@ -454,7 +480,7 @@
         state.sha = r.content.sha;
       } catch (e) {
         if (retry && (e.status === 409 || e.status === 422)) {
-          // File changed on GitHub since we loaded it: grab the latest version id and try once more.
+          // The file changed on GitHub since we loaded it: get the latest version id and try once more.
           const f = await gh(`/contents/${CONFIG.dir}/settings.json?ref=${CONFIG.branch}`).catch(() => null);
           state.sha = f ? f.sha : null;
           return putSettings(message, false);
@@ -471,17 +497,16 @@
       }
       const prev = isPublic(slug);
       state.settings.pages[slug] = { guest: on };
-      const label = input.closest(".switch");
-      label.classList.add("busy");
-      renderStats();
+      const busy = v => document.querySelectorAll(`[data-switch="${slug}"]`).forEach(s => s.classList.toggle("busy", v));
+      busy(true); render(); route();
       const name = (state.pages.find(p => p.slug === slug) || {}).name || slug;
       saveChain = saveChain.then(() => putSettings(`${on ? "Show" : "Hide"} ${slug} ${on ? "to" : "from"} guests`))
-        .then(() => toast(on ? `✅ ${name} is now visible to guests (live in about a minute).` : `🔒 ${name} is now admin only.`))
+        .then(() => toast(on ? `${name} is now public (live in about a minute).` : `${name} is now admin only.`))
         .catch(e => {
           state.settings.pages[slug] = { guest: prev };
-          toast(e.status === 401 || e.status === 403 ? "GitHub refused the save. Check your token in settings." : `Couldn't save: ${e.message}`, "error");
+          toast(e.status === 401 || e.status === 403 ? "GitHub refused the save. Check your token in GitHub sync." : `Couldn't save: ${e.message}`, "error");
         })
-        .finally(() => render());
+        .finally(() => { busy(false); render(); route(); });
     }
 
     /* ---------- Rendering ---------- */
@@ -490,148 +515,219 @@
       return h < 5 ? "Still up" : h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : h < 22 ? "Good evening" : "Late night";
     }
 
-    function renderStats() {
-      const total = state.pages.length, pub = state.pages.filter(p => isPublic(p.slug)).length;
-      $("#statAll").textContent = total;
-      $("#statPublic").textContent = pub;
-      $("#statHidden").textContent = total - pub;
+    function renderSync() {
       const on = !!token();
-      $("#syncBtn").classList.toggle("on", on);
-      $("#syncText").innerHTML = on ? "<b>GitHub connected.</b> Checkbox changes go live for guests." : "<b>GitHub not connected.</b> Connect to save checkbox changes.";
-      $("#syncAction").textContent = on ? "Manage" : "Connect →";
+      ["#syncDot", "#syncDot2", "#navSyncDot"].forEach(s => $(s).classList.toggle("on", on));
+      $("#syncShort").textContent = on ? "Connected" : "Not connected";
+      $("#syncText").innerHTML = on ? "<b>GitHub connected.</b> Switch changes go live." : "<b>GitHub not connected.</b> Needed to save switches.";
+      $("#syncAction").textContent = on ? "Manage" : "Connect";
     }
 
-    function card(p) {
+    // Cards and menu items are built once per load, then only shown/hidden,
+    // so the live previews don't reload while searching or toggling.
+    const refs = new Map();
+    const scaleObserver = "ResizeObserver" in window
+      ? new ResizeObserver(es => es.forEach(e => e.target.style.setProperty("--s", e.contentRect.width / 1280)))
+      : null;
+
+    function makeSwitch(p) {
+      const sw = document.createElement("label"); sw.className = "switch"; sw.dataset.switch = p.slug;
+      const input = document.createElement("input"); input.type = "checkbox";
+      input.setAttribute("aria-label", `Show ${p.name} to guests`);
+      input.addEventListener("change", () => setGuest(p.slug, input.checked, input));
+      const track = document.createElement("span"); track.className = "track";
+      const lbl = document.createElement("span"); lbl.className = "lbl"; lbl.textContent = "Public";
+      sw.append(input, track, lbl);
+      return { sw, input };
+    }
+
+    function buildCard(p) {
       const el = document.createElement("article");
-      el.className = "card";
-      el.style.setProperty("--h", hue(p.slug));
-      const pub = isPublic(p.slug);
+      el.className = "card pcard";
+      const href = `#/view/${encodeURIComponent(p.slug)}`;
 
-      const top = document.createElement("div"); top.className = "card-top";
-      const tile = document.createElement("div"); tile.className = "tile"; tile.textContent = p.icon;
-      top.append(tile);
-      if (isAdmin()) {
-        const badge = document.createElement("span");
-        badge.className = "badge" + (pub ? " public" : "");
-        badge.textContent = pub ? "● visible" : "admin only";
-        top.append(badge);
-      }
+      const cover = document.createElement("a");
+      cover.className = "cover"; cover.href = href; cover.setAttribute("aria-label", `Open ${p.name}`);
+      const big = document.createElement("span"); big.className = "big"; big.textContent = p.icon;
+      const frame = document.createElement("iframe");
+      frame.loading = "lazy"; frame.tabIndex = -1; frame.title = `${p.name} preview`;
+      frame.setAttribute("aria-hidden", "true");
+      frame.addEventListener("load", () => frame.classList.add("ready"));
+      frame.src = pageUrl(p.slug);
+      cover.append(big, frame);
+      if (scaleObserver) scaleObserver.observe(cover);
+
+      const body = document.createElement("div"); body.className = "pbody";
+      const head = document.createElement("div"); head.className = "phead";
+      const emo = document.createElement("span"); emo.className = "emo"; emo.textContent = p.icon;
       const h3 = document.createElement("h3"); h3.textContent = p.name;
+      head.append(emo, h3);
+      let badge = null;
+      if (isAdmin()) { badge = document.createElement("span"); head.append(badge); }
       const desc = document.createElement("p"); desc.textContent = p.description;
-      el.append(top, h3, desc);
-      if (isAdmin()) { const path = document.createElement("div"); path.className = "path"; path.textContent = `pages/${p.slug}/`; el.append(path); }
+      body.append(head, desc);
+      if (isAdmin()) { const path = document.createElement("div"); path.className = "path"; path.textContent = `pages/${p.slug}/`; body.append(path); }
 
-      const foot = document.createElement("div"); foot.className = "card-foot";
-      if (isAdmin()) {
-        const sw = document.createElement("label"); sw.className = "switch";
-        const input = document.createElement("input"); input.type = "checkbox"; input.checked = pub;
-        input.setAttribute("aria-label", `Show ${p.name} to guests`);
-        input.addEventListener("change", () => setGuest(p.slug, input.checked, input));
-        const track = document.createElement("span"); track.className = "track";
-        const lbl = document.createElement("span"); lbl.className = "lbl"; lbl.textContent = "Show to guests";
-        sw.append(input, track, lbl);
-        foot.append(sw);
-      }
+      const foot = document.createElement("div"); foot.className = "pfoot";
+      let input = null;
+      if (isAdmin()) { const s = makeSwitch(p); input = s.input; foot.append(s.sw); }
       const open = document.createElement("a");
-      open.className = "btn small"; open.href = `#/view/${encodeURIComponent(p.slug)}`; open.textContent = "Open →";
+      open.className = "btn"; open.href = href; open.textContent = "Open";
       foot.append(open);
-      el.append(foot);
-      return el;
+      el.append(cover, body, foot);
+      return { el, badge, input };
+    }
+
+    function buildNavItem(p) {
+      const a = document.createElement("a");
+      a.className = "nav-item"; a.href = `#/view/${encodeURIComponent(p.slug)}`; a.title = p.name;
+      const emo = document.createElement("span"); emo.className = "emo"; emo.textContent = p.icon;
+      const txt = document.createElement("span"); txt.className = "txt"; txt.textContent = p.name;
+      a.append(emo, txt);
+      let vis = null;
+      if (isAdmin()) { vis = document.createElement("i"); vis.className = "vis"; a.append(vis); }
+      return { a, vis };
+    }
+
+    function build() {
+      const box = $("#cards"), nav = $("#navPages");
+      box.innerHTML = ""; nav.innerHTML = ""; refs.clear();
+      if (scaleObserver) scaleObserver.disconnect();
+      state.pages.forEach(p => {
+        const c = buildCard(p), n = buildNavItem(p);
+        box.append(c.el); nav.append(n.a);
+        refs.set(p.slug, { ...c, nav: n.a, vis: n.vis });
+      });
+      const empty = document.createElement("div"); empty.className = "empty"; empty.id = "emptyState"; empty.hidden = true;
+      box.append(empty);
     }
 
     function render() {
-      const box = $("#cards");
-      box.innerHTML = "";
       if (!state.session) return;
-      $("#greeting").textContent = `${greeting()}, ${state.session.name} ${isAdmin() ? "🛠️" : "👋"}`;
+      $("#greeting").textContent = `${greeting()}, ${state.session.name}`;
       $("#introText").textContent = isAdmin()
-        ? "Every small website in the pages folder. Flip the switch to show a page to guests."
-        : "Here's what's open to visitors right now. Tap a card to try it.";
+        ? "All your small websites. Flip a switch to make a page public."
+        : "Here's what's open to visitors right now. Pick a page to try it.";
       $("#adminBits").hidden = !isAdmin();
       $("#filter").hidden = !isAdmin();
-      $("#settingsBtn").hidden = !isAdmin();
+      $("#navAdmin").hidden = !isAdmin();
 
+      const box = $("#cards");
       if (!state.loaded) {
+        box.innerHTML = ""; refs.clear(); $("#navPages").innerHTML = "";
         for (let i = 0; i < 3; i++) { const s = document.createElement("div"); s.className = "skeleton"; box.append(s); }
         return;
       }
-      if (isAdmin()) renderStats();
+      if (isAdmin()) {
+        const total = state.pages.length, pub = state.pages.filter(p => isPublic(p.slug)).length;
+        $("#statAll").textContent = total; $("#statPublic").textContent = pub; $("#statHidden").textContent = total - pub;
+        renderSync();
+      }
 
       const q = state.query.toLowerCase();
-      const list = state.pages.filter(p => {
-        if (!isAdmin() && !isPublic(p.slug)) return false;
-        if (isAdmin() && state.filter === "public" && !isPublic(p.slug)) return false;
-        if (isAdmin() && state.filter === "hidden" && isPublic(p.slug)) return false;
-        return !q || (p.name + " " + p.description + " " + p.slug).toLowerCase().includes(q);
+      let shown = 0;
+      state.pages.forEach(p => {
+        const r = refs.get(p.slug); if (!r) return;
+        const pub = isPublic(p.slug);
+        const allowed = isAdmin() || pub;
+        let show = allowed;
+        if (isAdmin() && state.filter === "public" && !pub) show = false;
+        if (isAdmin() && state.filter === "hidden" && pub) show = false;
+        if (q && !(p.name + " " + p.description + " " + p.slug).toLowerCase().includes(q)) show = false;
+        r.el.hidden = !show; r.nav.hidden = !allowed;
+        if (show) shown++;
+        if (r.badge) { r.badge.className = "badge" + (pub ? " public" : ""); r.badge.textContent = pub ? "Public" : "Hidden"; }
+        if (r.input) r.input.checked = pub;
+        if (r.vis) { r.vis.classList.toggle("off", !pub); r.vis.title = pub ? "Public" : "Admin only"; }
       });
 
-      if (!list.length) {
-        const e = document.createElement("div"); e.className = "empty";
+      const e = $("#emptyState");
+      e.hidden = shown > 0;
+      if (!shown) {
         if (q || state.filter !== "all") e.innerHTML = "<b>🔍</b>No pages match.";
         else if (isAdmin()) e.innerHTML = "<b>📂</b>No pages yet. Add a folder like <code>pages/my-idea/</code> with an <code>index.html</code> and <code>info.json</code>.";
         else e.innerHTML = "<b>🌙</b>Nothing public yet. Check back soon.";
-        box.append(e);
-        return;
       }
-      list.forEach(p => box.append(card(p)));
     }
 
     /* ---------- Data loading ---------- */
     async function load() {
       state.loaded = false; render();
       state.settings = await loadSettings();
-      let slugs = isAdmin()
-        ? await listFolders()
-        : Object.keys(state.settings.pages).filter(isPublic);
+      let slugs = isAdmin() ? await listFolders() : Object.keys(state.settings.pages).filter(isPublic);
       slugs = [...new Set(slugs)].filter(validSlug);
       state.pages = (await Promise.all(slugs.map(loadInfo))).sort((a, b) => a.name.localeCompare(b.name));
       state.loaded = true;
-      render(); route();
+      build(); render(); route();
     }
 
     /* ---------- Routing ---------- */
     function route() {
       const m = location.hash.match(/^#\/view\/(.+)$/);
-      const viewer = $("#viewer"), frame = $("#frame");
-      if (!m || !state.session || !state.loaded) {
-        viewer.hidden = true; frame.removeAttribute("src"); document.title = "OffDutyCode";
-        return;
-      }
+      const frame = $("#frame");
+      document.querySelectorAll(".nav-item.active").forEach(n => n.classList.remove("active"));
+      const showHome = () => {
+        $("#home").hidden = false; $("#viewer").hidden = true; frame.removeAttribute("src");
+        $("#crumbRoot").textContent = "Overview"; $("#crumbSep").hidden = true; $("#crumbCur").textContent = "";
+        $("#viewSwitch").hidden = true; $("#viewOpen").hidden = true; $("#todayPill").hidden = false;
+        $("#navHome").classList.add("active");
+        document.title = "OffDutyCode";
+      };
+      if (!m || !state.session || !state.loaded) return showHome();
       const slug = decodeURIComponent(m[1]);
       const page = state.pages.find(p => p.slug === slug);
       if (!page || (!isAdmin() && !isPublic(slug))) { toast("That page isn't available.", "error"); location.hash = "#/"; return; }
-      $("#viewerTitle").textContent = `${page.icon} ${page.name}`;
-      $("#viewerOpen").href = pageUrl(slug);
+      $("#home").hidden = true; $("#viewer").hidden = false;
       if (frame.getAttribute("src") !== pageUrl(slug)) frame.src = pageUrl(slug);
+      $("#crumbRoot").textContent = "Pages"; $("#crumbSep").hidden = false; $("#crumbCur").textContent = `${page.icon} ${page.name}`;
+      $("#viewOpen").href = pageUrl(slug); $("#viewOpen").hidden = false; $("#todayPill").hidden = true;
+      const vs = $("#viewSwitch");
+      vs.hidden = !isAdmin(); vs.dataset.switch = slug; $("#viewGuest").checked = isPublic(slug);
+      const r = refs.get(slug); if (r) r.nav.classList.add("active");
       document.title = `${page.name} · OffDutyCode`;
-      viewer.hidden = false;
     }
     addEventListener("hashchange", route);
+    $("#viewGuest").addEventListener("change", e => {
+      const slug = $("#viewSwitch").dataset.switch;
+      if (slug) setGuest(slug, e.target.checked, e.target);
+    });
 
     /* ---------- Login / logout ---------- */
     function showApp() {
       $("#login").hidden = !!state.session;
       $("#app").hidden = !state.session;
-      if (!state.session) { $("#viewer").hidden = true; return; }
+      if (!state.session) return;
       $("#userName").textContent = state.session.name;
-      $("#userRole").textContent = state.session.role;
-      $("#userRole").classList.toggle("admin", isAdmin());
+      $("#userRole").textContent = isAdmin() ? "Admin" : "Guest";
+      $("#avatar").textContent = state.session.name.slice(0, 1).toUpperCase();
+      $("#avatar").classList.toggle("admin", isAdmin());
       load();
     }
     function login(role, name) {
       state.session = { role, name };
       store.set("sessionStorage", "odc.session", state.session);
       if (!location.hash.startsWith("#/view/")) location.hash = "#/";
-      showApp(); scrollTo(0, 0);
+      showApp();
     }
     function logout() {
       state.session = null; state.pages = []; state.filter = "all"; state.query = "";
-      $("#search").value = ""; $("#adminPass").value = "";
+      $("#search").value = ""; $("#adminPass").value = ""; $("#frame").removeAttribute("src");
+      $("#cards").innerHTML = ""; $("#navPages").innerHTML = ""; refs.clear();
       store.del("sessionStorage", "odc.session");
       history.replaceState(null, "", location.pathname);
-      showApp();
+      closeMenu(); showApp();
     }
 
+    document.querySelectorAll(".tabs button").forEach(t => t.addEventListener("click", () => {
+      const admin = t.id === "tabAdmin";
+      ["#tabGuest", "#tabAdmin"].forEach((id, i) => {
+        const on = (i === 1) === admin;
+        $(id).setAttribute("aria-selected", on); $(id).setAttribute("aria-pressed", on);
+      });
+      $("#guestPanel").hidden = admin; $("#adminDoor").hidden = !admin;
+      $("#loginError").textContent = "";
+      (admin ? $("#adminUser") : $("#guestName")).focus({ preventScroll: true });
+    }));
     $("#guestForm").addEventListener("submit", e => {
       e.preventDefault();
       const name = $("#guestName").value.trim().replace(/[^\p{L}\p{N} ._-]/gu, "").slice(0, 24) || "guest";
@@ -640,12 +736,12 @@
     $("#adminForm").addEventListener("submit", async e => {
       e.preventDefault();
       const user = $("#adminUser").value.trim().toLowerCase(), pass = $("#adminPass").value;
-      const err = $("#loginError"), door = $("#adminDoor");
+      const err = $("#loginError"), card = $(".login-card");
       try {
         if (await sha256(`${user}:${pass}`) === ADMIN_HASH) { err.textContent = ""; login("admin", user); return; }
         err.textContent = "Wrong username or password.";
       } catch { err.textContent = "Login needs a secure (https) connection."; }
-      door.classList.remove("shake"); void door.offsetWidth; door.classList.add("shake");
+      card.classList.remove("shake"); void card.offsetWidth; card.classList.add("shake");
     });
     $("#logoutBtn").addEventListener("click", logout);
 
@@ -662,14 +758,14 @@
     function openSettings(reason) {
       const on = !!token();
       $("#settingsReason").textContent = reason ||
-        "Guest visibility is stored in pages/settings.json in your repo, so every visitor sees the same thing. To let this page update that file, connect a GitHub key once on this device.";
+        "Which pages are public is stored in pages/settings.json in your repo, so every visitor sees the same thing. Connect a GitHub key once on this device so the switches can update that file.";
       $("#ghConnected").hidden = !on; $("#ghForm").hidden = on;
       $("#ghSave").hidden = on; $("#ghDisconnect").hidden = !on;
       $("#ghError").textContent = ""; $("#ghToken").value = "";
+      closeMenu();
       $("#settings").showModal();
     }
-    $("#settingsBtn").addEventListener("click", () => openSettings());
-    $("#syncBtn").addEventListener("click", () => openSettings());
+    ["#navSync", "#syncStat", "#syncBar"].forEach(s => $(s).addEventListener("click", () => openSettings()));
     $("#ghClose").addEventListener("click", () => $("#settings").close());
     $("#ghSave").addEventListener("click", async () => {
       const t = $("#ghToken").value.trim(), err = $("#ghError"), btn = $("#ghSave");
@@ -683,7 +779,7 @@
         if (repo.permissions && !repo.permissions.push) throw new Error("This token can't edit the repo. Give it Contents: Read and write.");
         store.set("localStorage", "odc.ghToken", t);
         $("#settings").close();
-        toast("✅ GitHub connected. Checkbox changes now save for everyone.");
+        toast("GitHub connected. Switch changes now save for everyone.");
         load();
       } catch (e) {
         err.textContent = e.message || "Couldn't reach GitHub.";
@@ -691,7 +787,7 @@
     });
     $("#ghDisconnect").addEventListener("click", () => {
       store.del("localStorage", "odc.ghToken");
-      $("#settings").close(); renderStats();
+      $("#settings").close(); renderSync();
       toast("GitHub disconnected on this device.");
     });
 

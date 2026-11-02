@@ -6,17 +6,19 @@
 
 ## How the site works
 
-1. **Login screen.** Visitors choose **Guest** (no password) or **Admin** (username and password).
-2. **Admin dashboard.** Admins see a card for every page in the `pages/` folder. Each card has:
-   - an **Open** button to use the page
-   - a **Show to guests** switch that decides whether guests can see it
-3. **Guest gallery.** Guests only see the pages that are switched on.
+1. **Login.** Visitors choose **Guest** (no password) or **Admin** (username and password).
+2. **Dashboard.** A sidebar lists every page. It collapses to icons on desktop and slides in on phones.
+   The overview shows each page as a card with a live preview.
+3. **Admins** see every page in `pages/` and a **Public** switch on each one.
+4. **Guests** only see pages that are switched on.
+5. **Dark and light mode.** Use the switch at the bottom of the sidebar. Pages follow the same theme.
 
 ## Add a new page
 
 1. Copy the `pages/_template/` folder and rename it, for example `pages/weather-app/`.
    Use lowercase letters, numbers and dashes. Folders starting with `_` are ignored.
 2. Put your page in `index.html` inside that folder (plus any images, CSS or JS it needs).
+   The template already uses the shared look from `pages/_shared/` (theme, cards, buttons, inputs).
 3. Edit `info.json` in the same folder:
 
    ```json

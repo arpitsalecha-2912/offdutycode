@@ -4,138 +4,151 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Office Clock</title>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="../_shared/theme.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../_shared/ui.css">
   <style>
-    :root {
-      --bg: #080a12; --card: rgba(255,255,255,0.045); --line: rgba(255,255,255,0.09);
-      --fg: #eef0f7; --muted: #9097ab; --green: #7cd992; --violet: #9d8cff; --amber: #ffcf6b; --red: #ff8a8a;
-      --mono: "JetBrains Mono", ui-monospace, monospace;
+    :root { --accent: var(--green); --accent-fg: #052e1c; }
+    .layout { display: grid; gap: 16px; }
+    @media (min-width: 900px) {
+      .layout { grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); grid-template-areas: "hero side" "week shift"; }
+      .hero { grid-area: hero; } .side { grid-area: side; } .week-card { grid-area: week; } .shift-card { grid-area: shift; }
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      min-height: 100vh; padding: 28px 16px 40px; color: var(--fg);
-      font-family: "Space Grotesk", system-ui, sans-serif;
-      background: radial-gradient(circle at 15% 0%, #16233a 0%, transparent 50%), radial-gradient(circle at 90% 10%, #231a45 0%, transparent 45%), var(--bg);
-    }
-    main { max-width: 560px; margin: 0 auto; }
-    header { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 22px; }
-    h1 { font-size: 1.6rem; letter-spacing: -0.02em; }
-    .date { color: var(--muted); font-size: 0.92rem; }
-    .now { font-family: var(--mono); font-size: 0.85rem; color: var(--muted); border: 1px solid var(--line); background: var(--card); padding: 6px 12px; border-radius: 99px; white-space: nowrap; font-variant-numeric: tabular-nums; }
 
-    .hero { background: var(--card); border: 1px solid var(--line); border-radius: 24px; padding: 24px 20px; text-align: center; }
-    .ring { position: relative; width: min(64vw, 240px); aspect-ratio: 1; margin: 0 auto 18px; }
-    .ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
-    .ring circle { fill: none; stroke-width: 11; }
-    .ring .track { stroke: rgba(255,255,255,0.07); }
+    /* Hero ring */
+    .hero { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 18px; padding-block: clamp(24px, 4vw, 40px); overflow: hidden; }
+    .ring { position: relative; width: min(66vw, 290px); aspect-ratio: 1; z-index: 1; }
+    .ring svg { width: 100%; height: 100%; transform: rotate(-90deg); overflow: visible; }
+    .ring circle { fill: none; stroke-width: 9; }
+    .ring .track { stroke: var(--line); }
     .ring .prog { stroke: url(#g); stroke-linecap: round; transition: stroke-dashoffset 1s linear; }
-    .ring .center { position: absolute; inset: 0; display: grid; place-content: center; }
-    .ring .pct { font-family: var(--mono); font-size: clamp(2.2rem, 11vw, 3rem); font-weight: 700; line-height: 1; }
-    .ring .pct small { font-size: 0.45em; color: var(--muted); }
-    .ring .lbl { color: var(--muted); font-size: 0.85rem; margin-top: 6px; }
-    .mood { font-size: 1.1rem; font-weight: 600; }
-    .mood-sub { color: var(--muted); font-size: 0.92rem; margin-top: 2px; }
+    .ring .ticks line { stroke: var(--line-2); stroke-width: 1; }
+    .center { position: absolute; inset: 0; display: grid; place-content: center; }
+    .pct { font-family: var(--display); font-size: clamp(3rem, 13vw, 4.2rem); font-weight: 700; line-height: 1; letter-spacing: -0.04em; }
+    .pct small { font-size: 0.42em; color: var(--muted); margin-left: 2px; }
+    .center span { color: var(--muted); font-size: 0.88rem; margin-top: 6px; }
+    .mood { z-index: 1; }
+    .mood b { display: block; font-family: var(--display); font-size: clamp(1.15rem, 2.4vw, 1.35rem); font-weight: 600; }
+    .mood span { color: var(--muted); font-size: 0.95rem; }
 
-    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 14px; }
-    .stat { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 14px 12px; }
-    .stat span { display: block; color: var(--muted); font-size: 0.78rem; }
-    .stat b { display: block; font-family: var(--mono); font-size: clamp(1.05rem, 4.6vw, 1.35rem); margin-top: 2px; font-variant-numeric: tabular-nums; }
-    .stat.done b { color: var(--green); }
-    .stat.left b { color: var(--amber); }
+    /* Stats */
+    .side { display: grid; gap: 16px; align-content: start; }
+    .stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+    .stat { padding: 16px; }
+    .stat .ico { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; font-size: 1rem; margin-bottom: 12px; background: var(--card-hi); border: 1px solid var(--line); }
+    .stat span { display: block; color: var(--muted); font-size: 0.8rem; }
+    .stat b { display: block; font-family: var(--mono); font-size: clamp(1.05rem, 2.4vw, 1.45rem); margin-top: 2px; white-space: nowrap; }
+    .stat.done b { color: var(--green); } .stat.left b { color: var(--amber); } .stat.left.over b { color: var(--red); }
+    @media (max-width: 420px) { .stat { padding: 13px 12px; } .stat .ico { display: none; } }
 
-    .card { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 18px; margin-top: 14px; }
-    .card h2 { font-size: 1rem; margin-bottom: 12px; }
-    .timeline { position: relative; height: 10px; border-radius: 99px; background: rgba(255,255,255,0.07); margin: 30px 4px 34px; }
-    .timeline .fill { position: absolute; inset: 0 auto 0 0; border-radius: inherit; background: linear-gradient(90deg, var(--violet), var(--green)); width: 0; transition: width 1s linear; }
-    .mark { position: absolute; top: 50%; transform: translate(-50%, -50%); width: 14px; height: 14px; border-radius: 50%; background: #1a1d2b; border: 2px solid var(--muted); }
-    .mark.passed { border-color: var(--green); background: var(--green); }
-    .mark span { position: absolute; left: 50%; transform: translateX(-50%); white-space: nowrap; font-size: 0.72rem; color: var(--muted); }
-    .mark .top { bottom: 18px; } .mark .bot { top: 18px; font-family: var(--mono); }
-    .mark.first span { left: 0; transform: none; }
-    .mark.last span { left: auto; right: 0; transform: none; }
+    /* Timeline */
+    .timeline { position: relative; height: 10px; border-radius: 99px; background: var(--panel-2); margin: 34px 6px 34px; }
+    .fill { position: absolute; inset: 0 auto 0 0; border-radius: inherit; background: linear-gradient(90deg, var(--violet), var(--green)); width: 0; transition: width 1s linear; box-shadow: 0 0 14px rgba(124,217,146,0.35); }
+    .mark { position: absolute; top: 50%; transform: translate(-50%, -50%); width: 16px; height: 16px; border-radius: 50%; background: var(--panel); border: 2px solid var(--dim); }
+    .mark.passed { border-color: var(--green); background: var(--green); box-shadow: 0 0 0 4px rgba(124,217,146,0.15); }
+    .mark span { position: absolute; left: 50%; transform: translateX(-50%); white-space: nowrap; font-size: 0.76rem; color: var(--muted); }
+    .mark .top { bottom: 22px; font-weight: 500; } .mark .bot { top: 22px; font-family: var(--mono); font-size: 0.72rem; }
+    .mark.first span { left: -2px; transform: none; } .mark.last span { left: auto; right: -2px; transform: none; }
+    .now-chip { display: flex; justify-content: space-between; color: var(--muted); font-size: 0.85rem; }
+    .now-chip b { color: var(--fg); font-weight: 600; }
 
-    .settings { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    label span { display: block; font-size: 0.78rem; color: var(--muted); margin-bottom: 6px; }
-    input[type=time], select {
-      width: 100%; font: 600 1rem var(--mono); color: var(--fg); background: rgba(0,0,0,0.3);
-      border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; color-scheme: dark;
-    }
-    .row { display: flex; gap: 10px; margin-top: 12px; }
-    .btn { flex: 1; font: 600 0.92rem "Space Grotesk", sans-serif; padding: 11px; border-radius: 12px; border: 1px solid var(--line); background: rgba(255,255,255,0.06); color: var(--fg); cursor: pointer; }
-    .btn.green { background: var(--green); border-color: var(--green); color: #06210f; }
-
-    .week { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+    /* Week */
+    .week { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
     .day { text-align: center; }
-    .day .bar { height: 70px; border-radius: 10px; background: rgba(255,255,255,0.06); position: relative; overflow: hidden; }
-    .day .bar i { position: absolute; left: 0; right: 0; bottom: 0; background: linear-gradient(0deg, var(--violet), var(--green)); height: 0; transition: height .6s; }
-    .day.today .bar { outline: 2px solid rgba(124,217,146,0.5); outline-offset: 2px; }
-    .day span { display: block; font-size: 0.75rem; color: var(--muted); margin-top: 6px; }
-    .week-sum { color: var(--muted); font-size: 0.88rem; margin-top: 12px; }
-    .week-sum b { color: var(--fg); }
-    .note { color: #646b80; font-size: 0.78rem; margin-top: 18px; text-align: center; }
+    .bar { height: 96px; border-radius: 12px; background: var(--panel-2); position: relative; overflow: hidden; border: 1px solid var(--line); }
+    .bar i { position: absolute; inset: auto 0 0 0; background: linear-gradient(0deg, rgba(165,148,255,0.85), rgba(124,217,146,0.95)); height: 0; transition: height .6s; }
+    .day.today .bar { border-color: rgba(124,217,146,0.6); box-shadow: 0 0 0 3px rgba(124,217,146,0.12); }
+    .day span { display: block; font-size: 0.78rem; color: var(--muted); margin-top: 8px; }
+    .day.today span { color: var(--fg); font-weight: 600; }
+    .week-sum { color: var(--muted); font-size: 0.9rem; margin-top: 16px; }
+    .week-sum b { color: var(--fg); font-weight: 600; }
+
+    /* Shift settings */
+    .fields { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    select.input { appearance: none; background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%), linear-gradient(135deg, var(--muted) 50%, transparent 50%); background-position: calc(100% - 18px) 52%, calc(100% - 13px) 52%; background-size: 5px 5px; background-repeat: no-repeat; padding-right: 34px; }
+    .input.mono { font-weight: 500; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
+    .note { color: var(--dim); font-size: 0.8rem; margin-top: 14px; }
   </style>
 </head>
 <body>
-  <main>
-    <header>
-      <div><h1>⏰ Office Clock</h1><p class="date" id="date"></p></div>
-      <span class="now" id="now">--:--:--</span>
+  <main class="page">
+    <header class="page-head">
+      <div>
+        <p class="eyebrow">Office hours · 9:30 – 6:30</p>
+        <h1 class="title">⏰ Office Clock</h1>
+        <p class="lead" id="date"></p>
+      </div>
+      <span class="pill"><i class="dot"></i><span id="now">--:--:--</span></span>
     </header>
 
-    <section class="hero">
-      <div class="ring">
-        <svg viewBox="0 0 120 120">
-          <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9d8cff"/><stop offset="1" stop-color="#7cd992"/></linearGradient></defs>
-          <circle class="track" cx="60" cy="60" r="50"/><circle class="prog" id="prog" cx="60" cy="60" r="50"/>
-        </svg>
-        <div class="center"><div class="pct" id="pct">0<small>%</small></div><div class="lbl">of today done</div></div>
-      </div>
-      <p class="mood" id="mood">…</p>
-      <p class="mood-sub" id="moodSub"></p>
-    </section>
+    <div class="layout">
+      <section class="card hero">
+        <div class="ring">
+          <svg viewBox="0 0 120 120">
+            <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#a594ff"/><stop offset="1" stop-color="#7cd992"/></linearGradient></defs>
+            <g class="ticks" id="ticks"></g>
+            <circle class="track" cx="60" cy="60" r="50"/><circle class="prog" id="prog" cx="60" cy="60" r="50"/>
+          </svg>
+          <div class="center"><div class="pct" id="pct">0<small>%</small></div><span>of today done</span></div>
+        </div>
+        <div class="mood"><b id="mood">…</b><span id="moodSub"></span></div>
+      </section>
 
-    <div class="stats">
-      <div class="stat done"><span>Completed</span><b id="done">0h 00m</b></div>
-      <div class="stat left"><span id="leftLbl">Left</span><b id="left">9h 00m</b></div>
-      <div class="stat"><span>Logout at</span><b id="out">6:30 pm</b></div>
+      <div class="side">
+        <div class="stats">
+          <div class="card stat done"><div class="ico">✅</div><span>Completed</span><b id="done">0h 00m</b></div>
+          <div class="card stat left" id="leftCard"><div class="ico">⏳</div><span id="leftLbl">Left</span><b id="left">9h 00m</b></div>
+          <div class="card stat"><div class="ico">🚪</div><span>Logout at</span><b id="out">6:30 pm</b></div>
+        </div>
+        <section class="card">
+          <div class="card-title">Today's timeline <small id="tlNote"></small></div>
+          <div class="timeline" id="timeline"><div class="fill" id="fill"></div></div>
+          <div class="now-chip"><span>Shift: <b id="shiftSpan">9:30 am – 6:30 pm</b></span><span id="breakNote"></span></div>
+        </section>
+      </div>
+
+      <section class="card week-card">
+        <div class="card-title">This week <small>Mon – Fri</small></div>
+        <div class="week" id="week"></div>
+        <p class="week-sum" id="weekSum"></p>
+      </section>
+
+      <section class="card shift-card">
+        <div class="card-title">My shift <small>saved on this device</small></div>
+        <div class="fields">
+          <label><span class="label">I came in at</span><input class="input mono" type="time" id="inTime" value="09:30"></label>
+          <label><span class="label">Shift length</span>
+            <select class="input" id="len"><option value="8">8 hours</option><option value="8.5">8.5 hours</option><option value="9" selected>9 hours</option><option value="9.5">9.5 hours</option></select>
+          </label>
+        </div>
+        <div class="row">
+          <button class="btn primary" id="nowBtn" type="button">I just arrived</button>
+          <button class="btn" id="resetBtn" type="button">Reset to 9:30</button>
+        </div>
+        <p class="note">Default: 9:30 am to 6:30 pm, Monday to Friday. The week view assumes full days before today.</p>
+      </section>
     </div>
-
-    <section class="card">
-      <h2>Today's timeline</h2>
-      <div class="timeline" id="timeline"><div class="fill" id="fill"></div></div>
-    </section>
-
-    <section class="card">
-      <h2>This week</h2>
-      <div class="week" id="week"></div>
-      <p class="week-sum" id="weekSum"></p>
-    </section>
-
-    <section class="card">
-      <h2>My shift</h2>
-      <div class="settings">
-        <label><span>I came in at</span><input type="time" id="inTime" value="09:30"></label>
-        <label><span>Shift length</span>
-          <select id="len"><option value="8">8 hours</option><option value="8.5">8.5 hours</option><option value="9" selected>9 hours</option><option value="9.5">9.5 hours</option></select>
-        </label>
-      </div>
-      <div class="row">
-        <button class="btn green" id="nowBtn" type="button">I just arrived</button>
-        <button class="btn" id="resetBtn" type="button">Reset to 9:30</button>
-      </div>
-    </section>
-
-    <p class="note">Default shift: 9:30 am to 6:30 pm, Monday to Friday. Settings are saved on this device. The week view assumes full days before today.</p>
   </main>
 
   <script>
     const C = 2 * Math.PI * 50;
-    const prog = document.getElementById("prog");
-    prog.style.strokeDasharray = C;
     const $ = id => document.getElementById(id);
+    const prog = $("prog");
+    prog.style.strokeDasharray = C;
+    // Hour ticks around the ring
+    for (let i = 0; i < 36; i++) {
+      const a = (i / 36) * Math.PI * 2, r1 = 58, r2 = i % 4 === 0 ? 55 : 56.5;
+      const l = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      l.setAttribute("x1", 60 + r1 * Math.cos(a)); l.setAttribute("y1", 60 + r1 * Math.sin(a));
+      l.setAttribute("x2", 60 + r2 * Math.cos(a)); l.setAttribute("y2", 60 + r2 * Math.sin(a));
+      $("ticks").append(l);
+    }
+
     const DEFAULT = { inTime: "09:30", len: 9 };
     const today = () => new Date().toDateString();
-
     function load() {
       try {
         const s = JSON.parse(localStorage.getItem("officeClock")) || {};
@@ -143,9 +156,7 @@
         return { inTime: s.day === today() && s.inTime ? s.inTime : DEFAULT.inTime, len: s.len || DEFAULT.len };
       } catch { return { ...DEFAULT }; }
     }
-    function save() {
-      try { localStorage.setItem("officeClock", JSON.stringify({ inTime: cfg.inTime, len: cfg.len, day: today() })); } catch {}
-    }
+    function save() { try { localStorage.setItem("officeClock", JSON.stringify({ inTime: cfg.inTime, len: cfg.len, day: today() })); } catch {} }
     let cfg = load();
     $("inTime").value = cfg.inTime;
     $("len").value = String(cfg.len);
@@ -172,11 +183,12 @@
       $("done").textContent = weekday ? hm(worked) : "0h 00m";
       $("out").textContent = fmtClock(end);
       $("fill").style.width = pct * 100 + "%";
+      $("shiftSpan").textContent = `${fmtClock(start)} – ${fmtClock(end)}`;
 
       const over = weekday && now > end;
       $("leftLbl").textContent = over ? "Overtime" : "Left";
+      $("leftCard").classList.toggle("over", over);
       $("left").textContent = !weekday ? "—" : over ? hm(now - end) : hm(end - Math.max(now, start));
-      $("left").style.color = over ? "var(--red)" : "";
 
       let mood, sub;
       if (!weekday) { mood = "Weekend! No office today 🎉"; sub = "Go meet friends. The tickets can wait till Monday."; }
@@ -195,30 +207,34 @@
       document.title = weekday ? `${Math.floor(pct * 100)}% · Office Clock` : "Office Clock";
     }
 
-    let lastTimelineKey = "";
+    let lastKey = "";
     function drawTimeline(start, end, now, weekday) {
       const total = end - start;
       const points = [
         { t: start, top: "In" },
-        { t: round15(new Date(start.getTime() + total * 0.45)), top: "Lunch 🍱" },
-        { t: round15(new Date(start.getTime() + total * 0.78)), top: "Chai ☕" },
+        { t: round15(new Date(start.getTime() + total * 0.45)), top: "Lunch" },
+        { t: round15(new Date(start.getTime() + total * 0.78)), top: "Chai" },
         { t: end, top: "Logout" }
       ];
+      const next = points.find(p => now < p.t);
+      $("breakNote").textContent = weekday && next ? `Next: ${next.top} at ${fmtClock(next.t)}` : "";
+      $("tlNote").textContent = weekday ? `${points.filter(p => now >= p.t).length} of 4 done` : "weekend";
       const key = points.map(p => +p.t).join() + weekday + points.filter(p => now >= p.t).length;
-      if (key === lastTimelineKey) return;
-      lastTimelineKey = key;
+      if (key === lastKey) return;
+      lastKey = key;
       const tl = $("timeline");
       tl.querySelectorAll(".mark").forEach(m => m.remove());
       points.forEach((p, i) => {
-        const m = document.createElement("div");
         const edge = i === 0 || i === points.length - 1;
+        const m = document.createElement("div");
         m.className = "mark" + (weekday && now >= p.t ? " passed" : "") + (i === 0 ? " first" : "") + (i === points.length - 1 ? " last" : "");
         m.style.left = ((p.t - start) / total) * 100 + "%";
-        m.innerHTML = `<span class="top"></span><span class="bot"></span>`;
-        // Edge marks show their time below; middle marks show it in the label to avoid overlap.
-        m.querySelector(".top").textContent = edge ? p.top : `${p.top.split(" ")[0]} ${fmtClock(p.t).replace(/\s?[ap]m$/i, "")}`;
-        m.querySelector(".bot").textContent = edge ? fmtClock(p.t) : "";
-        tl.append(m);
+        const top = document.createElement("span"); top.className = "top";
+        const bot = document.createElement("span"); bot.className = "bot";
+        // Edge marks show their time below; middle marks put it in the label so nothing overlaps.
+        top.textContent = edge ? p.top : `${p.top} ${fmtClock(p.t).replace(/\s?[ap]m$/i, "")}`;
+        bot.textContent = edge ? fmtClock(p.t) : "";
+        m.append(top, bot); tl.append(m);
       });
     }
 
@@ -231,40 +247,41 @@
           week.append(d);
         });
       }
-      const dow = now.getDay(); // 0 Sun ... 6 Sat
+      const dow = now.getDay();
       let doneMs = 0;
       [...week.children].forEach((el, i) => {
         const d = i + 1;
         let frac = 0;
-        if (dow === 0 || dow === 6) frac = dow === 6 ? 1 : 0; // Saturday: week done. Sunday: new week ahead.
+        if (dow === 6) frac = 1;               // Saturday: the week is done
+        else if (dow === 0) frac = 0;          // Sunday: new week ahead
         else if (d < dow) frac = 1;
         else if (d === dow) frac = worked / total;
         el.classList.toggle("today", d === dow);
         el.querySelector("i").style.height = frac * 100 + "%";
         doneMs += frac * total;
       });
-      const totalWeek = total * 5;
-      let toWeekend;
+      let toWeekend = "<b>It's the weekend!</b> 🎉";
       if (dow >= 1 && dow <= 5) {
         const fri = new Date(now); fri.setDate(now.getDate() + (5 - dow));
-        const friEnd = at(fri, cfg.inTime); friEnd.setTime(friEnd.getTime() + cfg.len * 3600000);
+        const friEnd = new Date(at(fri, cfg.inTime).getTime() + cfg.len * 3600000);
         const ms = friEnd - now;
-        toWeekend = ms > 0 ? `Weekend starts in <b>${Math.floor(ms / 86400000)}d ${Math.floor(ms % 86400000 / 3600000)}h</b>.` : "<b>It's the weekend!</b>";
-      } else toWeekend = "<b>It's the weekend!</b> 🎉";
-      $("weekSum").innerHTML = `<b>${hm(doneMs)}</b> of ${hm(totalWeek)} done this week. ${toWeekend}`;
+        if (ms > 0) toWeekend = `Weekend in <b>${Math.floor(ms / 86400000)}d ${Math.floor(ms % 86400000 / 3600000)}h</b>.`;
+      }
+      $("weekSum").innerHTML = `<b>${hm(doneMs)}</b> of ${hm(total * 5)} done this week. ${toWeekend}`;
     }
 
-    $("inTime").addEventListener("change", e => { cfg.inTime = e.target.value || DEFAULT.inTime; save(); lastTimelineKey = ""; tick(); });
-    $("len").addEventListener("change", e => { cfg.len = parseFloat(e.target.value); save(); lastTimelineKey = ""; tick(); });
+    const refresh = () => { save(); lastKey = ""; tick(); };
+    $("inTime").addEventListener("change", e => { cfg.inTime = e.target.value || DEFAULT.inTime; refresh(); });
+    $("len").addEventListener("change", e => { cfg.len = parseFloat(e.target.value); refresh(); });
     $("nowBtn").addEventListener("click", () => {
       const n = new Date();
       cfg.inTime = `${String(n.getHours()).padStart(2, "0")}:${String(n.getMinutes()).padStart(2, "0")}`;
-      $("inTime").value = cfg.inTime; save(); lastTimelineKey = ""; tick();
+      $("inTime").value = cfg.inTime; refresh();
     });
     $("resetBtn").addEventListener("click", () => {
       cfg = { ...DEFAULT }; $("inTime").value = cfg.inTime; $("len").value = "9";
       try { localStorage.removeItem("officeClock"); } catch {}
-      lastTimelineKey = ""; tick();
+      lastKey = ""; tick();
     });
 
     tick(); setInterval(tick, 1000);

@@ -4,17 +4,34 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>My New Page</title>
+  <!-- Shared look: dark/light theme + cards, buttons, inputs -->
+  <script src="../_shared/theme.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../_shared/ui.css">
   <style>
-    body {
-      margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 16px;
-      background: #0a0b12; color: #eef0f7; font-family: system-ui, sans-serif; text-align: center;
-    }
+    .grid { display: grid; gap: 16px; }
+    @media (min-width: 900px) { .grid { grid-template-columns: 1fr 1fr; } }
   </style>
 </head>
 <body>
-  <main>
-    <h1>✨ My New Page</h1>
-    <p>Copy this folder, rename it, and build something fun.</p>
+  <main class="page">
+    <header class="page-head">
+      <div>
+        <p class="eyebrow">Category · tagline</p>
+        <h1 class="title">✨ My New Page</h1>
+        <p class="lead">One line about what this page does.</p>
+      </div>
+    </header>
+    <div class="grid">
+      <section class="card">
+        <div class="card-title">Left card</div>
+        <label><span class="label">An input</span><input class="input" placeholder="Type here"></label>
+      </section>
+      <section class="card">
+        <div class="card-title">Right card</div>
+        <button class="btn primary">A button</button>
+      </section>
+    </div>
   </main>
 </body>
 </html>
