@@ -192,6 +192,11 @@
     dialog .row { display: flex; gap: 10px; margin-top: 8px; }
     dialog .row .btn { flex: 1; }
     .note { margin-top: 14px; font-size: 0.8rem !important; }
+    .vault { margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--line); }
+    .vault h3 { font-size: 1rem; font-weight: 650; margin-bottom: 4px; }
+    .vault > p { margin-bottom: 12px; }
+    .vault b { color: var(--fg); font-weight: 600; }
+    .vault-state { font-size: 0.85rem !important; padding: 9px 12px; border-radius: 10px; background: var(--panel-2); }
     .connected { padding: 12px 14px; border-radius: 10px; background: var(--green-soft); color: var(--fg) !important; margin: 12px 0; }
     #toast { position: fixed; left: 50%; bottom: max(20px, env(safe-area-inset-bottom)); transform: translate(-50%, 140%); z-index: 40; max-width: calc(100% - 32px); padding: 11px 16px; border-radius: 12px; font-size: 0.9rem; background: var(--fg); color: var(--bg); box-shadow: var(--shadow-lg); visibility: hidden; transition: transform .3s, visibility .3s; }
     #toast.show { transform: translate(-50%, 0); visibility: visible; }
@@ -336,12 +341,22 @@
       <label class="field"><span class="label">GitHub token</span><input class="input" id="ghToken" type="password" autocomplete="off" spellcheck="false" placeholder="github_pat_…"></label>
       <p class="error" id="ghError" aria-live="polite"></p>
     </div>
+    <div id="vaultBox" class="vault" hidden>
+      <h3>Use this key on all your devices</h3>
+      <p>Lock the key with a <b>new admin password</b>. Only the locked (encrypted) version is saved to GitHub. Signing in as admin with this password unlocks it on any device. Your old password stops working.</p>
+      <p class="vault-state" id="vaultState"></p>
+      <label class="field"><span class="label">Admin username</span><input class="input" id="vaultUser" autocomplete="username" autocapitalize="off" spellcheck="false"></label>
+      <label class="field"><span class="label">New admin password (12+ characters)</span><input class="input" id="vaultPass" type="password" autocomplete="new-password"></label>
+      <label class="field"><span class="label">Type it again</span><input class="input" id="vaultPass2" type="password" autocomplete="new-password"></label>
+      <p class="error" id="vaultError" aria-live="polite"></p>
+      <button class="btn primary block" id="vaultSave" type="button">Lock key and save to GitHub</button>
+    </div>
     <div class="row">
       <button class="btn" id="ghClose" type="button">Close</button>
       <button class="btn primary" id="ghSave" type="button">Connect</button>
       <button class="btn" id="ghDisconnect" type="button" hidden>Disconnect</button>
     </div>
-    <p class="note">The key is kept only in this browser. Only connect on your own phone or computer.</p>
+    <p class="note">On this device the key is kept in this browser. Only connect on your own phone or computer.</p>
   </dialog>
 
   <div id="toast" role="status" aria-live="polite"></div>
@@ -377,6 +392,47 @@
       const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
       return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, "0")).join("");
     }
+    /* ---------- Encrypted admin key (admin.json) ----------
+       The GitHub key is encrypted in the browser with AES-GCM. The AES key comes from
+       the admin username + password via PBKDF2 (600k rounds), so admin.json is useless
+       without the password. Only the encrypted file is stored in the repo. */
+    const VAULT_FILE = "admin.json", VAULT_ITER = 600000;
+    const bytesToB64 = u8 => { let s = ""; u8.forEach(b => s += String.fromCharCode(b)); return btoa(s); };
+    const b64ToBytes = b64 => Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+    async function deriveVault(user, pass, saltB64, iter) {
+      const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(`${user}:${pass}`), "PBKDF2", false, ["deriveBits"]);
+      const bits = new Uint8Array(await crypto.subtle.deriveBits({ name: "PBKDF2", hash: "SHA-256", salt: b64ToBytes(saltB64), iterations: iter }, base, 512));
+      // First half checks the password, second half is the AES key.
+      return { check: bytesToB64(bits.slice(0, 32)), key: await crypto.subtle.importKey("raw", bits.slice(32), "AES-GCM", false, ["encrypt", "decrypt"]) };
+    }
+    async function loadVault() {
+      try {
+        const r = await fetch(`${VAULT_FILE}?t=${Date.now()}`, { cache: "no-store" });
+        if (r.ok) { const v = await r.json(); if (v && v.check && v.salt && v.token) return v; }
+      } catch {}
+      return null;
+    }
+    async function unlockVault(v, user, pass) {
+      const d = await deriveVault(user, pass, v.salt, v.iter || VAULT_ITER);
+      if (user !== v.user || d.check !== v.check) return null;
+      try {
+        const plain = await crypto.subtle.decrypt({ name: "AES-GCM", iv: b64ToBytes(v.iv) }, d.key, b64ToBytes(v.token));
+        return new TextDecoder().decode(plain);
+      } catch { return ""; } // password right but key data damaged
+    }
+    async function saveVault(user, pass, tok) {
+      const salt = bytesToB64(crypto.getRandomValues(new Uint8Array(16)));
+      const iv = crypto.getRandomValues(new Uint8Array(12));
+      const d = await deriveVault(user, pass, salt, VAULT_ITER);
+      const data = new Uint8Array(await crypto.subtle.encrypt({ name: "AES-GCM", iv }, d.key, new TextEncoder().encode(tok)));
+      const vault = { v: 1, user, kdf: "PBKDF2-SHA256", iter: VAULT_ITER, salt, check: d.check, iv: bytesToB64(iv), token: bytesToB64(data) };
+      let sha;
+      try { sha = (await gh(`/contents/${VAULT_FILE}?ref=${CONFIG.branch}`)).sha; } catch (e) { if (e.status !== 404) throw e; }
+      const body = { message: "Update encrypted admin key", branch: CONFIG.branch, content: b64encode(JSON.stringify(vault, null, 2) + "\n") };
+      if (sha) body.sha = sha;
+      await gh(`/contents/${VAULT_FILE}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+    }
+
     const b64encode = str => { let bin = ""; new TextEncoder().encode(str).forEach(b => bin += String.fromCharCode(b)); return btoa(bin); };
     const b64decode = b64 => new TextDecoder().decode(Uint8Array.from(atob(b64.replace(/\s/g, "")), c => c.charCodeAt(0)));
     function tickClock() {
@@ -736,11 +792,22 @@
     $("#adminForm").addEventListener("submit", async e => {
       e.preventDefault();
       const user = $("#adminUser").value.trim().toLowerCase(), pass = $("#adminPass").value;
-      const err = $("#loginError"), card = $(".login-card");
+      const err = $("#loginError"), card = $(".login-card"), btn = e.submitter || $("#adminForm button");
+      btn.disabled = true; btn.textContent = "Signing in…"; err.textContent = "";
       try {
-        if (await sha256(`${user}:${pass}`) === ADMIN_HASH) { err.textContent = ""; login("admin", user); return; }
+        const vault = await loadVault();
+        if (vault) {
+          // Encrypted key set up: the new password both signs in and unlocks the GitHub key.
+          const tok = await unlockVault(vault, user, pass);
+          if (tok !== null) {
+            if (tok) store.set("localStorage", "odc.ghToken", tok);
+            else toast("Signed in, but the saved GitHub key couldn't be unlocked.", "error");
+            login("admin", user); return;
+          }
+        } else if (await sha256(`${user}:${pass}`) === ADMIN_HASH) { login("admin", user); return; }
         err.textContent = "Wrong username or password.";
       } catch { err.textContent = "Login needs a secure (https) connection."; }
+      finally { btn.disabled = false; btn.textContent = "Sign in"; }
       card.classList.remove("shake"); void card.offsetWidth; card.classList.add("shake");
     });
     $("#logoutBtn").addEventListener("click", logout);
@@ -762,9 +829,35 @@
       $("#ghConnected").hidden = !on; $("#ghForm").hidden = on;
       $("#ghSave").hidden = on; $("#ghDisconnect").hidden = !on;
       $("#ghError").textContent = ""; $("#ghToken").value = "";
+      $("#vaultBox").hidden = !on;
+      $("#vaultError").textContent = ""; $("#vaultPass").value = ""; $("#vaultPass2").value = "";
+      $("#vaultUser").value = (state.session && state.session.name) || "admin";
+      if (on) {
+        $("#vaultState").textContent = "Checking…";
+        loadVault().then(v => $("#vaultState").textContent = v
+          ? `✅ Set up. Signing in as "${v.user}" unlocks the key on any device. Saving again replaces it.`
+          : "Not set up yet. Right now the key only works in this browser.");
+      }
       closeMenu();
-      $("#settings").showModal();
+      if (!$("#settings").open) $("#settings").showModal();
     }
+    $("#vaultSave").addEventListener("click", async () => {
+      const user = $("#vaultUser").value.trim().toLowerCase(), p1 = $("#vaultPass").value, p2 = $("#vaultPass2").value;
+      const err = $("#vaultError"), btn = $("#vaultSave");
+      if (!/^[\w.-]{3,32}$/.test(user)) { err.textContent = "Username: 3 to 32 letters, numbers, dots or dashes."; return; }
+      if (p1.length < 12) { err.textContent = "Use at least 12 characters. A few random words works well."; return; }
+      if (p1 !== p2) { err.textContent = "The two passwords don't match."; return; }
+      if (p1 === "offduty2026") { err.textContent = "Pick a new password, not the old one."; return; }
+      btn.disabled = true; btn.textContent = "Encrypting and saving…"; err.textContent = "";
+      try {
+        await saveVault(user, p1, token());
+        $("#vaultPass").value = ""; $("#vaultPass2").value = "";
+        $("#vaultState").textContent = `✅ Saved. In about a minute, signing in as "${user}" with the new password unlocks the key on any device.`;
+        toast("Encrypted key saved to GitHub.");
+      } catch (e) {
+        err.textContent = e.status === 401 || e.status === 403 ? "GitHub refused the save. Check the key has Contents: Read and write." : `Couldn't save: ${e.message}`;
+      } finally { btn.disabled = false; btn.textContent = "Lock key and save to GitHub"; }
+    });
     ["#navSync", "#syncStat", "#syncBar"].forEach(s => $(s).addEventListener("click", () => openSettings()));
     $("#ghClose").addEventListener("click", () => $("#settings").close());
     $("#ghSave").addEventListener("click", async () => {
@@ -778,9 +871,9 @@
         const repo = await r.json();
         if (repo.permissions && !repo.permissions.push) throw new Error("This token can't edit the repo. Give it Contents: Read and write.");
         store.set("localStorage", "odc.ghToken", t);
-        $("#settings").close();
         toast("GitHub connected. Switch changes now save for everyone.");
         load();
+        openSettings("Connected on this device. To use the key on your other devices too, lock it with a new admin password below.");
       } catch (e) {
         err.textContent = e.message || "Couldn't reach GitHub.";
       } finally { btn.disabled = false; btn.textContent = "Connect"; }
@@ -788,7 +881,7 @@
     $("#ghDisconnect").addEventListener("click", () => {
       store.del("localStorage", "odc.ghToken");
       $("#settings").close(); renderSync();
-      toast("GitHub disconnected on this device.");
+      toast("GitHub key removed from this browser. Signing in again unlocks it if you set up the encrypted key.");
     });
 
     /* ---------- Start ---------- */

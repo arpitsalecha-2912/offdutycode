@@ -47,6 +47,13 @@ Which pages guests can see is stored in `pages/settings.json`:
 
 The dashboard switch updates this file for you. The first time, it asks for a GitHub key (a fine-grained token with **Contents: Read and write** on this repo only). The key is saved only in that browser. You can also edit `settings.json` by hand on GitHub.
 
+### Use the key on all your devices
+
+In **GitHub sync**, after connecting the key, choose a new admin password and tap **Lock key and save to GitHub**.
+The browser encrypts the key (AES-GCM, with the password stretched by PBKDF2, 600,000 rounds) and saves only the
+encrypted version to `admin.json`. Signing in as admin with that password unlocks the key on any device.
+The new password replaces the old one. Pick a long one, since anyone can download `admin.json` and try to guess it.
+
 ## Good to know
 
 - The admin password check runs in the browser, so it keeps casual visitors out but isn't real security.
