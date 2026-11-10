@@ -8,10 +8,17 @@
 
 1. **Login.** Visitors choose **Guest** (no password) or **Admin** (username and password).
 2. **Dashboard.** A sidebar lists every page. It collapses to icons on desktop and slides in on phones.
-   The overview shows each page as a card with a live preview.
-3. **Admins** see every page in `pages/` and a **Public** switch on each one.
+   The overview shows the office-day progress, quick stats and a card with a live preview for each page.
+3. **Admins** see every page in `pages/`, a **Public** switch on each one, and a private **Artifacts** section.
 4. **Guests** only see pages that are switched on.
 5. **Dark and light mode.** Use the switch at the bottom of the sidebar. Pages follow the same theme.
+
+## Private artifacts (admin only)
+
+`private/artifacts.json` holds the admin's list of Claude artifacts. It is **encrypted** (AES-GCM, key from the
+admin password via PBKDF2), so it can't be read from the repo. It unlocks in the browser after admin sign-in.
+Add or remove items from **Artifacts** in the dashboard. Setting a new admin password in **GitHub sync**
+re-locks the list with that password.
 
 ## Add a new page
 
